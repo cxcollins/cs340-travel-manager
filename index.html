@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="styles.css" />
+        <title>Adventure Travelers</title>
+    </head>
+    <body>
+        <header>
+            <h1>Adventure Travelers</h1>
+            <p>
+                Your one-stop destination for planning personalized adventures!
+            </p>
+        </header>
+
+        <section class="hero" id="home">
+            <div>
+                <h2>Explore Your Next Adventure</h2>
+                <p>
+                    From luxurious escapes to remote adventures, we have it all.
+                </p>
+            </div>
+        </section>
+
+        <nav class="main-nav">
+            <ul>
+                <li><a href="#home">Home</a></li>
+                <li><a href="#search">Search</a></li>
+                <li><a href="#login">Login</a></li>
+                <li><a href="#register">Register</a></li>
+                <li><a href="#travel-plans">Travel Plans</a></li>
+            </ul>
+        </nav>
+
+        <main>
+            <section id="search" class="search-section">
+                <h2>Search for Your Adventure</h2>
+                <form action="#" method="GET">
+                    <input type="text" name="city" placeholder="City" />
+                    <input type="text" name="state" placeholder="State" />
+                    <input type="text" name="country" placeholder="Country" />
+                    <input
+                        type="text"
+                        name="keyword"
+                        placeholder="Keyword search..."
+                    />
+                    <button type="submit">Search</button>
+                </form>
+            </section>
+
+            <section id="login" class="login-section">
+                <h2>User Login</h2>
+                <form action="#" method="POST">
+                    <input
+                        type="email"
+                        name="email"
+                        placeholder="Email"
+                        required
+                    />
+                    <input
+                        type="password"
+                        name="password"
+                        placeholder="Password"
+                        required
+                    />
+                    <button type="submit">Login</button>
+                </form>
+                <p>
+                    If you haven't registered yet, please proceed to the
+                    registration section.
+                </p>
+            </section>
+
+            <section id="register" class="register-section">
+                <h2>User Registration</h2>
+                <form action="#" method="POST">
+                    <input
+                        type="text"
+                        name="first_name"
+                        placeholder="First Name"
+                        required
+                    />
+                    <input
+                        type="text"
+                        name="last_name"
+                        placeholder="Last Name"
+                        required
+                    />
+                    <input
+                        type="email"
+                        name="email"
+                        placeholder="Email"
+                        required
+                    />
+                    <input
+                        type="tel"
+                        name="phone_number"
+                        placeholder="Phone Number"
+                        required
+                    />
+                    <button type="submit">Register</button>
+                </form>
+                <p>
+                    Upon registration, your information will be stored with a
+                    unique user ID and your registration date will be recorded
+                    automatically.
+                </p>
+            </section>
+
+            <section id="travel-plans" class="travel-plans-section">
+                <h2>My Travel Plans</h2>
+                <form action="#" method="POST">
+                    <select name="destination_id" id="plan-destination">
+                        <option value="">Select Destination</option>
+                        <option value="1">Tokyo, Japan (Meiji Jingu)</option>
+                        <option value="2">Honolulu, USA (Waikiki Beach)</option>
+                        <option value="3">Paris, France (Eiffel Tower)</option>
+                    </select>
+                    <input
+                        type="date"
+                        name="start_date"
+                        placeholder="Start Date"
+                    />
+                    <input type="date" name="end_date" placeholder="End Date" />
+                    <input
+                        type="number"
+                        name="budget"
+                        placeholder="Budget (USD)"
+                        step="0.01"
+                    />
+                    <button type="submit">Create Travel Plan</button>
+                </form>
+                <h3>Existing Travel Plans</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Destination</th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
+                            <th>Budget (USD)</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Tokyo, Japan</td>
+                            <td>2025-01-07</td>
+                            <td>2025-01-09</td>
+                            <td>2000.00</td>
+                            <td>COMPLETED</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2025 Adventure Travelers. All rights reserved.</p>
+        </footer>
+    </body>
+</html>
