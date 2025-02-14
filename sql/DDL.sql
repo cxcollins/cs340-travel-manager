@@ -8,39 +8,36 @@ CREATE OR REPLACE TABLE `Users` (
     `first_name` VARCHAR(255) NOT NULL,
     `last_name` VARCHAR(255) NOT NULL,
     `email` VARCHAR(255) NOT NULL,
-    `phone_number` VARCHAR(255) NOT NULL,
-    `creation_date` DATE NOT NULL DEFAULT CURRENT_DATE,
+    `phone_number` VARCHAR(15) NOT NULL,
+    `creation_date` DATE NOT NULL,
     PRIMARY KEY (`user_id`)
 );
 
 CREATE OR REPLACE TABLE `Travel_Plans` (
     `plan_id` INT NOT NULL UNIQUE AUTO_INCREMENT,
-    `user_id` INT,
+    `user_id` INT NOT NULL,
     `destination_id` INT,
     `start_date` DATE,
     `end_date` DATE,
     `budget` DECIMAL(10, 2) NOT NULL DEFAULT 99999.99,
     `status` ENUM('PENDING', 'BOOKED', 'COMPLETED') NOT NULL DEFAULT 'PENDING',
     PRIMARY KEY (`plan_id`),
-    FOREIGN KEY (`user_id`) REFERENCES `Users`(`user_id`) ON DELETE SET NULL,
-    FOREIGN KEY (`destination_id`) REFERENCES `Destinations`(`destination_id`) ON DELETE CASCADE
+    FOREIGN KEY (`user_id`) REFERENCES `Users`(`user_id`) ON DELETE CASCADE,
+    FOREIGN KEY (`destination_id`) REFERENCES `Destinations`(`destination_id`) ON DELETE SET NULL
 );
 
 CREATE OR REPLACE TABLE `Destinations` (
     `destination_id` INT NOT NULL UNIQUE AUTO_INCREMENT,
-    `name` VARCHAR(255) NOT NULL,
     `country` VARCHAR(255) NOT NULL,
     `state` VARCHAR(255),
     `city` VARCHAR(255) NOT NULL,
-    `climate` VARCHAR(255) NOT NULL,
     PRIMARY KEY (`destination_id`)
 );
 
 CREATE OR REPLACE TABLE `Destinations_Activities` (
-    `destination_activity_id` INT UNIQUE NOT NULL AUTO_INCREMENT,
     `destination_id` INT NOT NULL,
     `activity_id` INT NOT NULL,
-    PRIMARY KEY (`destination_activity_id`),
+    PRIMARY KEY (destination_id, activity_id),
     FOREIGN KEY (`destination_id`) REFERENCES `Destinations`(`destination_id`) ON DELETE CASCADE,
     FOREIGN KEY (`activity_id`) REFERENCES `Activities`(`activity_id`) ON DELETE CASCADE
 );
@@ -72,10 +69,10 @@ VALUES (2, 1, '2025-01-07', '2025-01-09', 2000.00, 'COMPLETED'),
     (1, 2, '2025-07-20', '2025-08-20', 1500.00, 'BOOKED'),
     (3, 2, '2025-09-01', '2025-09-03', 2500.00, 'PENDING');
 
-INSERT INTO `Destinations` (`country`, `name`, `state`, `city`, `climate`)
-VALUES ('Japan', 'Meiji Jingu', NULL, 'Tokyo', 'Varied'),
-       ('United States', 'Waikiki Beach', 'Hawaii', 'Honolulu', 'Tropical'),
-       ('France', 'Eiffel Tower', NULL, 'Paris', 'Varied');
+INSERT INTO `Destinations` (`country`, `state`, `city`)
+VALUES ('Japan', NULL, 'Tokyo'),
+       ('United States', 'Hawaii', 'Honolulu'),
+       ('France', NULL, 'Paris');
 
 INSERT INTO `Destinations_Activities` (`destination_id`, `activity_id`)
 VALUES (1, 2),
