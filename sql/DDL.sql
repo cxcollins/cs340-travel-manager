@@ -35,9 +35,9 @@ CREATE OR REPLACE TABLE `Destinations` (
 );
 
 CREATE OR REPLACE TABLE `Destinations_Activities` (
+    `destination_activity_id` INT NOT NULL UNIQUE AUTO_INCREMENT,
     `destination_id` INT NOT NULL,
     `activity_id` INT NOT NULL,
-    PRIMARY KEY (destination_id, activity_id),
     FOREIGN KEY (`destination_id`) REFERENCES `Destinations`(`destination_id`) ON DELETE CASCADE,
     FOREIGN KEY (`activity_id`) REFERENCES `Activities`(`activity_id`) ON DELETE CASCADE
 );
