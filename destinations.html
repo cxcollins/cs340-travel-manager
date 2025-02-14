@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="styles.css" />
+        <title>Adventure Travelers - Destinations</title>
+    </head>
+    <body>
+        <header>
+            <h1>Adventure Travelers</h1>
+        </header>
+        <nav>
+            <a href="index.html">Dashboard</a>
+            <a href="users.html">Users</a>
+            <a href="travel_plans.html">Travel Plans</a>
+            <a href="destinations.html">Destinations</a>
+            <a href="hotels.html">Hotels</a>
+            <a href="activities.html">Activities</a>
+        </nav>
+        <div class="container">
+            <h2>Destinations</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Destination ID</th>
+                        <th>Country</th>
+                        <th>State</th>
+                        <th>City</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>Japan</td>
+                        <td>NULL</td>
+                        <td>Tokyo</td>
+                        <td>
+                            <button>Edit</button>
+                            <button>Delete</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <h3>Add New Destination</h3>
+            <form>
+                <div>
+                    <label for="country">Country</label>
+                    <input type="text" id="country" name="country" required />
+                </div>
+                <div>
+                    <label for="state">State</label>
+                    <input type="text" id="state" name="state" />
+                </div>
+                <div>
+                    <label for="city">City</label>
+                    <input type="text" id="city" name="city" required />
+                </div>
+                <div>
+                    <button type="submit">Add Destination</button>
+                </div>
+            </form>
+        </div>
+    </body>
+</html>

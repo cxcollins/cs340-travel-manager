@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="styles.css" />
+        <title>Adventure Travelers - Travel Plans</title>
+    </head>
+    <body>
+        <header>
+            <h1>Adventure Travelers</h1>
+        </header>
+        <nav>
+            <a href="index.html">Dashboard</a>
+            <a href="users.html">Users</a>
+            <a href="travel_plans.html">Travel Plans</a>
+            <a href="destinations.html">Destinations</a>
+            <a href="hotels.html">Hotels</a>
+            <a href="activities.html">Activities</a>
+        </nav>
+        <div class="container">
+            <h2>Travel Plans</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Plan ID</th>
+                        <th>User ID</th>
+                        <th>Destination ID</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Budget</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>2</td>
+                        <td>1</td>
+                        <td>2025-01-07</td>
+                        <td>2025-01-09</td>
+                        <td>$2000.00</td>
+                        <td>COMPLETED</td>
+                        <td>
+                            <button>Edit</button>
+                            <button>Delete</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <h3>Add New Travel Plan</h3>
+            <form>
+                <div>
+                    <label for="startDate">Start Date</label>
+                    <input
+                        type="date"
+                        id="startDate"
+                        name="startDate"
+                        required
+                    />
+                </div>
+                <div>
+                    <label for="endDate">End Date</label>
+                    <input type="date" id="endDate" name="endDate" required />
+                </div>
+                <div>
+                    <label for="budget">Budget</label>
+                    <input type="text" id="budget" name="budget" required />
+                </div>
+                <div>
+                    <label for="status">Status</label>
+                    <input type="text" id="status" name="status" required />
+                </div>
+                <div>
+                    <button type="submit">Add Travel Plan</button>
+                </div>
+            </form>
+        </div>
+    </body>
+</html>

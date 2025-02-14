@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="styles.css" />
+        <title>Adventure Travelers - Activites</title>
+    </head>
+    <body>
+        <header>
+            <h1>Adventure Travelers</h1>
+        </header>
+        <nav>
+            <a href="index.html">Dashboard</a>
+            <a href="users.html">Users</a>
+            <a href="travel_plans.html">Travel Plans</a>
+            <a href="destinations.html">Destinations</a>
+            <a href="hotels.html">Hotels</a>
+            <a href="activities.html">Activities</a>
+        </nav>
+        <div class="container">
+            <h2>Activites</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Activity ID</th>
+                        <th>Name</th>
+                        <th>Type</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>Snorkeling or Diving</td>
+                        <td>Outdoor</td>
+                        <td>
+                            <button>Edit</button>
+                            <button>Delete</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <h3>Add New Activity</h3>
+            <form>
+                <div>
+                    <label for="activityName">Name</label>
+                    <input
+                        type="text"
+                        id="activityName"
+                        name="activityName"
+                        required
+                    />
+                </div>
+                <div>
+                    <label for="activityType">Type</label>
+                    <input
+                        type="text"
+                        id="activityType"
+                        name="activityType"
+                        required
+                    />
+                </div>
+                <div>
+                    <button type="submit">Add Activity</button>
+                </div>
+            </form>
+        </div>
+    </body>
+</html>
