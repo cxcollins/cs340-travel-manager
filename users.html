@@ -71,6 +71,10 @@
                     <input type="text" id="phone" name="phone" required />
                 </div>
                 <div>
+                    <label for="phone">Creation Date</label>
+                    <input type="date" id="creationDate" name="creationDate" required />
+                </div>
+                <div>
                     <button type="submit">Add User</button>
                 </div>
             </form>
@@ -97,6 +101,10 @@
                         <input type="text" id="editPhone" required />
                     </div>
                     <div>
+                        <label for="editCreationDate">Creation Date:</label>
+                        <input type="date" id="editCreationDate" required />
+                    </div>
+                    <div>
                         <button type="submit">Save Changes</button>
                     </div>
                 </form>
@@ -114,11 +122,12 @@
             </div>
         </div>
         <script>
-            function openEditModal(firstName, lastName, email, phone) {
+            function openEditModal(firstName, lastName, email, phone, creationDate) {
                 document.getElementById("editFirstName").value = firstName;
                 document.getElementById("editLastName").value = lastName;
                 document.getElementById("editEmail").value = email;
                 document.getElementById("editPhone").value = phone;
+                document.getElementById("editCreationDate").value = creationDate;
                 document.getElementById("editModal").classList.remove("hidden");
             }
 
@@ -147,6 +156,8 @@
                             event.target.parentElement.parentElement.children[3]
                                 .textContent,
                             event.target.parentElement.parentElement.children[4]
+                                .textContent,
+                            event.target.parentElement.parentElement.children[5]
                                 .textContent
                         );
                     } else if (event.target.textContent === "Delete") {

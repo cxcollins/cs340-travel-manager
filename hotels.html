@@ -48,7 +48,16 @@
             <h3>Add New Hotel</h3>
             <form>
                 <div>
-                    <label for="hotelName">Name</label>
+                    <label for="destinationID">Destination ID:</label>
+                    <input
+                        type="text"
+                        id="destinationID"
+                        name="destinationID"
+                        required
+                    />
+                </div>
+                <div>
+                    <label for="hotelName">Name:</label>
                     <input
                         type="text"
                         id="hotelName"
@@ -57,7 +66,7 @@
                     />
                 </div>
                 <div>
-                    <label for="costPerNight">Cost Per Night</label>
+                    <label for="costPerNight">Cost Per Night:</label>
                     <input
                         type="text"
                         id="costPerNight"
@@ -66,7 +75,7 @@
                     />
                 </div>
                 <div>
-                    <label for="rating">Rating</label>
+                    <label for="rating">Rating:</label>
                     <input type="text" id="rating" name="rating" required />
                 </div>
                 <div>
@@ -79,6 +88,10 @@
                 <span class="close" onclick="closeEditModal()">&times;</span>
                 <h3>Edit Hotel</h3>
                 <form>
+                    <div>
+                        <label for="editDestinationID">Destination ID:</label>
+                        <input type="text" id="editDestinationID" required />
+                    </div>
                     <div>
                         <label for="editName">Name:</label>
                         <input type="text" id="editName" required />
@@ -109,7 +122,8 @@
             </div>
         </div>
         <script>
-            function openEditModal(name, costPerNight, rating) {
+            function openEditModal(destinationID, name, costPerNight, rating) {
+                document.getElementById("editDestinationID").value = destinationID;
                 document.getElementById("editName").value = name;
                 document.getElementById("editCostPerNight").value =
                     costPerNight;
@@ -135,6 +149,8 @@
                 button.addEventListener("click", function (event) {
                     if (event.target.textContent === "Edit") {
                         openEditModal(
+                            event.target.parentElement.parentElement.children[1]
+                                .textContent,
                             event.target.parentElement.parentElement.children[2]
                                 .textContent,
                             event.target.parentElement.parentElement.children[3]
