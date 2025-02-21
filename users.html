@@ -47,6 +47,26 @@
                     </tr>
                 </tbody>
             </table>
+            <h3>Filter Users</h3>
+            <form id="filterForm">
+                <div class="filterFormDiv">
+                    <select class="filterDropdown">
+                        <option>User Id</option>
+                        <option>First Name</option>
+                        <option>Last Name</option>
+                        <option>Email</option>
+                        <option>Phone Number</option>
+                        <option>Creation Date</option>
+                    </select>
+                    <input
+                        type="text"
+                        id="filter1"
+                        name="filter1"
+                        class="filterText"
+                    />
+                </div>
+            </form>
+            <button onclick="addFilter()">Add another filter</button>
             <h3>Add New User</h3>
             <form>
                 <div>
@@ -154,6 +174,33 @@
                     }
                 })
             );
+            
+            let filterCount = 2;
+
+            function addFilter() {
+                let filterForm = document.getElementById("filterForm")
+
+                let container = document.createElement("div")
+
+                container.innerHTML = `
+                    <select id="select${filterCount}" name="select${filterCount}">
+                        <option>User Id</option>
+                        <option>First Name</option>
+                        <option>Last Name</option>
+                        <option>Email</option>
+                        <option>Phone Number</option>
+                        <option>Creation Date</option>
+                    </select>
+                    <input
+                        type="text"
+                        id="filter${filterCount}"
+                        name="filter${filterCount}"
+                    />
+            `
+
+                filterForm.appendChild(container)
+                filterCount ++
+            }
 
             window.onclick = function (event) {
                 let deleteModal = document.getElementById("deleteModal");
