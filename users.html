@@ -17,6 +17,7 @@
             <a href="destinations.html">Destinations</a>
             <a href="hotels.html">Hotels</a>
             <a href="activities.html">Activities</a>
+            <a href="destinations_activities.html">Destinations Activities Intersection Table</a>
         </nav>
         <div class="container">
             <h2>Users</h2>
@@ -40,7 +41,7 @@
                         <td>lebronjames@gmail.com</td>
                         <td>503-214-1244</td>
                         <td>2025-01-04</td>
-                        <td>
+                        <td class="centerButtons">
                             <button>Edit</button>
                             <button>Delete</button>
                         </td>
@@ -64,6 +65,7 @@
                         name="filter1"
                         class="filterText"
                     />
+                <button type="submit">Search</button>
                 </div>
             </form>
             <button onclick="addFilter()">Add another filter</button>
@@ -193,8 +195,10 @@
 
                 let container = document.createElement("div")
 
+                container.className = "filterFormDiv"
+
                 container.innerHTML = `
-                    <select id="select${filterCount}" name="select${filterCount}">
+                    <select id="select${filterCount}" name="select${filterCount}" class="filterDropdown">
                         <option>User Id</option>
                         <option>First Name</option>
                         <option>Last Name</option>
@@ -206,6 +210,7 @@
                         type="text"
                         id="filter${filterCount}"
                         name="filter${filterCount}"
+                        class="filterText"
                     />
             `
 

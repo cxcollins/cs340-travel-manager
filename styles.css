@@ -11,13 +11,15 @@ nav {
     background-color: #333;
     color: #fff;
     padding: 10px 20px;
+    display: flex;
+    justify-content: center;
 }
 header h1 {
     margin: 0;
 }
 nav a {
     color: #fff;
-    margin-right: 15px;
+    margin: 0px 15px;
 }
 .container {
     width: 90%;
@@ -28,15 +30,29 @@ nav a {
 }
 .filterFormDiv {
     display: flex;
-    max-width: calc(100% - 130px);
     gap: 10px;
-    padding: 10px;
+    margin-bottom: 10px;
+    align-items: center;
 }
+/* .searchId {
+    margin: auto;
+} */
 .filterDropdown {
-    width: 100px;
+    width: 130px;
 }
-.filterText {
-    flex-grow: 1;
+.centerButtons {
+    display: flex;
+    justify-content: center;
+}
+.centerButtons button {
+    margin: auto;
+    width: 70px;
+}
+.searchResult {
+    margin-top: 10px;
+}
+input[type="text"].filterText {
+    width: calc(100% - 270px);
 }
 table {
     width: 100%;
@@ -65,7 +81,7 @@ form div {
 }
 label {
     display: inline-block;
-    width: 120px;
+    width: 140px;
 }
 input[type="text"],
 input[type="email"],

@@ -17,6 +17,7 @@
             <a href="destinations.html">Destinations</a>
             <a href="hotels.html">Hotels</a>
             <a href="activities.html">Activities</a>
+            <a href="destinations_activities.html">Destinations Activities Intersection Table</a>
         </nav>
         <div class="container">
             <h2>Destinations</h2>
@@ -36,13 +37,34 @@
                         <td>Japan</td>
                         <td>NULL</td>
                         <td>Tokyo</td>
-                        <td>
+                        <td class="centerButtons">
                             <button>Edit</button>
                             <button>Delete</button>
                         </td>
                     </tr>
                 </tbody>
             </table>
+            <h3>Filter Destinations</h3>
+            <form id="filterForm">
+                <div class="filterFormDiv">
+                    <select class="filterDropdown">
+                        <option>User Id</option>
+                        <option>First Name</option>
+                        <option>Last Name</option>
+                        <option>Email</option>
+                        <option>Phone Number</option>
+                        <option>Creation Date</option>
+                    </select>
+                    <input
+                        type="text"
+                        id="filter1"
+                        name="filter1"
+                        class="filterText"
+                    />
+                <button type="submit">Search</button>
+            </div>
+            </form>
+            <button onclick="addFilter()">Add another filter</button>
             <h3>Add New Destination</h3>
             <form>
                 <div>
@@ -134,6 +156,34 @@
                     }
                 })
             );
+
+            let filterCount = 2;
+
+            function addFilter() {
+                let filterForm = document.getElementById("filterForm")
+
+                let container = document.createElement("div")
+
+                container.className = "filterFormDiv"
+
+                container.innerHTML = `
+                    <select id="select${filterCount}" name="select${filterCount}" class="filterDropdown">
+                        <option>Destination ID</option>
+                        <option>Country</option>
+                        <option>State</option>
+                        <option>City</option>
+                    </select>
+                    <input
+                        type="text"
+                        id="filter${filterCount}"
+                        name="filter${filterCount}"
+                        class="filterText"
+                    />
+            `
+
+                filterForm.appendChild(container)
+                filterCount ++
+            }
 
             window.onclick = function (event) {
                 let deleteModal = document.getElementById("deleteModal");
