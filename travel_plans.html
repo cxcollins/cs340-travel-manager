@@ -52,7 +52,15 @@
             <h3>Add New Travel Plan</h3>
             <form>
                 <div>
-                    <label for="startDate">Start Date</label>
+                    <label for="userID">User ID:</label>
+                    <input type="text" id="userID" name="userID" required />
+                </div>
+                <div>
+                    <label for="destinationID">Destination ID:</label>
+                    <input type="text" id="destinationID" name="destinationID" required />
+                </div>
+                <div>
+                    <label for="startDate">Start Date:</label>
                     <input
                         type="date"
                         id="startDate"
@@ -61,15 +69,15 @@
                     />
                 </div>
                 <div>
-                    <label for="endDate">End Date</label>
+                    <label for="endDate">End Date:</label>
                     <input type="date" id="endDate" name="endDate" required />
                 </div>
                 <div>
-                    <label for="budget">Budget</label>
+                    <label for="budget">Budget:</label>
                     <input type="text" id="budget" name="budget" required />
                 </div>
                 <div>
-                    <label for="status">Status</label>
+                    <label for="status">Status:</label>
                     <select id="status" name="status" required>
                         <option value="PENDING">PENDING</option>
                         <option value="BOOKED">BOOKED</option>
@@ -86,6 +94,14 @@
                 <span class="close" onclick="closeEditModal()">&times;</span>
                 <h3>Edit Travel Plan</h3>
                 <form>
+                    <div>
+                        <label for="editUserID">User ID:</label>
+                        <input type="text" id="editUserID" required />
+                    </div>
+                    <div>
+                        <label for="editDestinationID">Destination ID:</label>
+                        <input type="text" id="editDestinationID" required />
+                    </div>
                     <div>
                         <label for="editStartDate">Start Date:</label>
                         <input type="date" id="editStartDate" required />
@@ -124,7 +140,9 @@
             </div>
         </div>
         <script>
-            function openEditModal(startDate, endDate, budget, status) {
+            function openEditModal(userID, destinationID, startDate, endDate, budget, status) {
+                document.getElementById("editUserID").value = userID;
+                document.getElementById("editDestinationID").value = destinationID;
                 document.getElementById("editStartDate").value = startDate;
                 document.getElementById("editEndDate").value = endDate;
                 document.getElementById("editBudget").value = budget;
@@ -150,6 +168,10 @@
                 button.addEventListener("click", function (event) {
                     if (event.target.textContent === "Edit") {
                         openEditModal(
+                            event.target.parentElement.parentElement.children[1]
+                                .textContent,
+                            event.target.parentElement.parentElement.children[2]
+                                .textContent,
                             event.target.parentElement.parentElement.children[3]
                                 .textContent,
                             event.target.parentElement.parentElement.children[4]
