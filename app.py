@@ -52,15 +52,6 @@ def fetchall_users():
     cur.close()
     return {'users': users}, 200
 
-# FETCH ALL DESTINATIONS ACTIVITIES
-@app.route('/destinations_activities/fetchall', methods=['GET'])
-def fetchall_destinations_activities():
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM Destinations_Activities;")
-    destinations_activities = cur.fetchall()
-    cur.close()
-    return {'destinations_activities': destinations_activities}, 200
-
 # GET USER
 @app.route('/users/<int:user_id>', methods=['GET'])
 def get_user(user_id):
@@ -69,18 +60,6 @@ def get_user(user_id):
     user = cur.fetchone()
     cur.close()
     return user if user else {}, 200
-
-# GET DESTINATION ACTIVITY
-@app.route('/destinations_activities/<int:destination_activity_id>', methods=['GET'])
-def get_user(destination_activity_id):
-    cur = mysql.connection.cursor()
-    cur.execute("""
-                SELECT * FROM Destinations_Activities
-                WHERE destination_activity_id = %s;
-    """, (destination_activity_id,))
-    destination_activity = cur.fetchone()
-    cur.close()
-    return destination_activity if destination_activity else {}, 200
 
 # INSERT USER
 @app.route('/users/insert', methods=['POST'])
@@ -94,19 +73,6 @@ def create_user():
     mysql.connection.commit()
     cur.close()
     return {'message': 'User added successfully'}, 201
-
-# INSERT DESTINATION ACTIVITY
-@app.route('/destination_activities/insert', methods=['POST'])
-def create_destination_activity():
-    data = request.json
-    cur = mysql.connection.cursor()
-    cur.execute("""
-        INSERT INTO Destinations_Activities (destination_id, activity_id)
-        VALUES (%s, %s);
-    """, (data['destination_id'], data['activity_id']))
-    mysql.connection.commit()
-    cur.close()
-    return {'message': 'Destination Activity added successfully'}, 201
 
 # UPDATE USER
 @app.route('/users/update/<int:user_id>', methods=['PUT'])
@@ -122,6 +88,50 @@ def update_user(user_id):
     cur.close()
     return {'message': 'User updated successfully'}, 200
 
+# DELETE USER
+@app.route('/users/delete/<int:user_id>', methods=['DELETE'])
+def delete_user(user_id):
+    cur = mysql.connection.cursor()
+    cur.execute("DELETE FROM Users WHERE user_id = %s;", (user_id,))
+    mysql.connection.commit()
+    cur.close()
+    return {'message': 'User deleted successfully'}, 200
+
+# FETCH ALL DESTINATIONS ACTIVITIES
+@app.route('/destinations_activities/fetchall', methods=['GET'])
+def fetchall_destinations_activities():
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM Destinations_Activities;")
+    destinations_activities = cur.fetchall()
+    cur.close()
+    return {'destinations_activities': destinations_activities}, 200
+
+# GET DESTINATION ACTIVITY
+@app.route('/destinations_activities/<int:destination_activity_id>', methods=['GET'])
+def get_user(destination_activity_id):
+    cur = mysql.connection.cursor()
+    cur.execute("""
+                SELECT * FROM Destinations_Activities
+                WHERE destination_activity_id = %s;
+    """, (destination_activity_id,))
+    destination_activity = cur.fetchone()
+    cur.close()
+    return destination_activity if destination_activity else {}, 200
+
+
+# INSERT DESTINATION ACTIVITY
+@app.route('/destination_activities/insert', methods=['POST'])
+def create_destination_activity():
+    data = request.json
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        INSERT INTO Destinations_Activities (destination_id, activity_id)
+        VALUES (%s, %s);
+    """, (data['destination_id'], data['activity_id']))
+    mysql.connection.commit()
+    cur.close()
+    return {'message': 'Destination Activity added successfully'}, 201
+
 # UPDATE DESTINATION ACTIVITY
 @app.route('/destination_activities/update/<int:destination_activity_id>', methods=['PUT'])
 def update_destination_activity(destination_activity_id):
@@ -135,15 +145,6 @@ def update_destination_activity(destination_activity_id):
     mysql.connection.commit()
     cur.close()
     return {'message': 'Destination Activity updated successfully'}, 200
-
-# DELETE USER
-@app.route('/users/delete/<int:user_id>', methods=['DELETE'])
-def delete_user(user_id):
-    cur = mysql.connection.cursor()
-    cur.execute("DELETE FROM Users WHERE user_id = %s;", (user_id,))
-    mysql.connection.commit()
-    cur.close()
-    return {'message': 'User deleted successfully'}, 200
 
 # DELETE DESTINATION ACTIVITY
 @app.route('/destination_activities/delete/<int:destination_activity_id>', methods=['DELETE'])
