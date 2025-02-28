@@ -45,7 +45,7 @@ def destinations_activities():
 
 # FETCH ALL
 @app.route('/users/fetchall', methods=['GET'])
-def get_users():
+def fetchall_users():
     cur = mysql.connection.cursor()
     cur.execute("SELECT * FROM Users;")
     users = cur.fetchall()
