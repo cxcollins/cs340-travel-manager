@@ -14,14 +14,38 @@ app.config['MYSQL_CURSORCLASS'] = "DictCursor"
 
 mysql = MySQL(app)
 
-# Default route
+# ROUTES TO RENDER HTML PAGES
 @app.route('/')
 def root():
-    return render_template("main.j2")
+    return render_template("index.html")
 
-# RETRIEVE ALL ROWS
-@app.route('/users', methods=['GET'])
-def get_users():
+@app.route('/users')
+def users():
+    return render_template("users.html")
+
+@app.route('/travel_plans')
+def travel_plans():
+    return render_template("travel_plans.html")
+
+@app.route('/destinations')
+def destinations():
+    return render_template("destinations.html")
+
+@app.route('/hotels')
+def hotels():
+    return render_template("hotels.html")
+
+@app.route('/activities')
+def activities():
+    return render_template("activities.html")
+
+@app.route('/destinations_activities')
+def destinations_activities():
+    return render_template("destinations_activities.html")
+
+# FETCH ALL
+@app.route('/users/fetchall', methods=['GET'])
+def fetchall_users():
     cur = mysql.connection.cursor()
     cur.execute("SELECT * FROM Users;")
     users = cur.fetchall()
@@ -37,7 +61,7 @@ def get_user(user_id):
     cur.close()
     return user if user else {}, 200
 
-# POST
+# INSERT
 @app.route('/users/insert', methods=['POST'])
 def create_user():
     data = request.json
@@ -50,7 +74,7 @@ def create_user():
     cur.close()
     return {'message': 'User added successfully'}, 201
 
-# PUT
+# UPDATE
 @app.route('/users/update/<int:user_id>', methods=['PUT'])
 def update_user(user_id):
     data = request.json

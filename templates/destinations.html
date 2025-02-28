@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link rel="stylesheet" href="styles.css" />
+        <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
         <title>Adventure Travelers - Destinations</title>
     </head>
     <body>
@@ -11,13 +11,13 @@
             <h1>Adventure Travelers</h1>
         </header>
         <nav>
-            <a href="index.html">Dashboard</a>
-            <a href="users.html">Users</a>
-            <a href="travel_plans.html">Travel Plans</a>
-            <a href="destinations.html">Destinations</a>
-            <a href="hotels.html">Hotels</a>
-            <a href="activities.html">Activities</a>
-            <a href="destinations_activities.html">Destinations Activities Intersection Table</a>
+            <a href="/">Dashboard</a>
+            <a href="users">Users</a>
+            <a href="travel_plans">Travel Plans</a>
+            <a href="destinations">Destinations</a>
+            <a href="hotels">Hotels</a>
+            <a href="activities">Activities</a>
+            <a href="destinations_activities">Destinations Activities Intersection Table</a>
         </nav>
         <div class="container">
             <h2>Destinations</h2>
