@@ -13,6 +13,15 @@ CREATE OR REPLACE TABLE `Users` (
     PRIMARY KEY (`user_id`) -- Primary key constraint
 );
 
+-- Create Destinations table to store destination information
+CREATE OR REPLACE TABLE `Destinations` (
+    `destination_id` INT NOT NULL UNIQUE AUTO_INCREMENT, -- Unique destination ID
+    `country` VARCHAR(255) NOT NULL, -- Country of the destination
+    `state` VARCHAR(255), -- State of the destination (optional)
+    `city` VARCHAR(255) NOT NULL, -- City of the destination
+    PRIMARY KEY (`destination_id`) -- Primary key constraint
+);
+
 -- Create Travel_Plans table to store travel plans for users
 CREATE OR REPLACE TABLE `Travel_Plans` (
     `plan_id` INT NOT NULL UNIQUE AUTO_INCREMENT, -- Unique plan ID
@@ -27,13 +36,12 @@ CREATE OR REPLACE TABLE `Travel_Plans` (
     FOREIGN KEY (`destination_id`) REFERENCES `Destinations`(`destination_id`) ON DELETE SET NULL -- Foreign key constraint referencing Destinations table
 );
 
--- Create Destinations table to store destination information
-CREATE OR REPLACE TABLE `Destinations` (
-    `destination_id` INT NOT NULL UNIQUE AUTO_INCREMENT, -- Unique destination ID
-    `country` VARCHAR(255) NOT NULL, -- Country of the destination
-    `state` VARCHAR(255), -- State of the destination (optional)
-    `city` VARCHAR(255) NOT NULL, -- City of the destination
-    PRIMARY KEY (`destination_id`) -- Primary key constraint
+-- Create Activities table to store activity information
+CREATE OR REPLACE TABLE `Activities` (
+    `activity_id` INT NOT NULL UNIQUE AUTO_INCREMENT, -- Unique activity ID
+    `name` VARCHAR(255) NOT NULL, -- Name of the activity
+    `type` VARCHAR(255) NOT NULL, -- Type of the activity
+    PRIMARY KEY (`activity_id`) -- Primary key constraint
 );
 
 -- Create Destinations_Activities table to store activities available at destinations
@@ -43,14 +51,6 @@ CREATE OR REPLACE TABLE `Destinations_Activities` (
     `activity_id` INT NOT NULL, -- ID of the activity
     FOREIGN KEY (`destination_id`) REFERENCES `Destinations`(`destination_id`) ON DELETE CASCADE, -- Foreign key constraint referencing Destinations table
     FOREIGN KEY (`activity_id`) REFERENCES `Activities`(`activity_id`) ON DELETE CASCADE -- Foreign key constraint referencing Activities table
-);
-
--- Create Activities table to store activity information
-CREATE OR REPLACE TABLE `Activities` (
-    `activity_id` INT NOT NULL UNIQUE AUTO_INCREMENT, -- Unique activity ID
-    `name` VARCHAR(255) NOT NULL, -- Name of the activity
-    `type` VARCHAR(255) NOT NULL, -- Type of the activity
-    PRIMARY KEY (`activity_id`) -- Primary key constraint
 );
 
 -- Create Hotels table to store hotel information
@@ -70,17 +70,23 @@ VALUES ('LeBron', 'James', 'lebronjames@gmail.com', '503-214-1244', '2025-01-04'
     ('Damian', 'Lillard', 'damianlillard@gmail.com', '503-932-4392', '2025-01-25'),
     ('Kevin', 'Durant', 'kevindurant@gmail.com', '503-738-2181', '2025-02-06');
 
+-- Insert sample data into Destinations table
+INSERT INTO `Destinations` (`country`, `state`, `city`)
+VALUES ('Japan', NULL, 'Tokyo'),
+       ('United States', 'Hawaii', 'Honolulu'),
+       ('France', NULL, 'Paris');
+
 -- Insert sample data into Travel_Plans table
 INSERT INTO `Travel_Plans` (`user_id`, `destination_id`, `start_date`, `end_date`, `budget`, `status`)
 VALUES (2, 1, '2025-01-07', '2025-01-09', 2000.00, 'COMPLETED'),
     (1, 2, '2025-07-20', '2025-08-20', 1500.00, 'BOOKED'),
     (3, 2, '2025-09-01', '2025-09-03', 2500.00, 'PENDING');
 
--- Insert sample data into Destinations table
-INSERT INTO `Destinations` (`country`, `state`, `city`)
-VALUES ('Japan', NULL, 'Tokyo'),
-       ('United States', 'Hawaii', 'Honolulu'),
-       ('France', NULL, 'Paris');
+-- Insert sample data into Activities table
+INSERT INTO `Activities` (`name`, `type`)
+VALUES ('Snorkeling or Diving', 'Outdoor'),
+       ('City Landmark Tour', 'Sightseeing'),
+       ('Museum Exploration', 'Cultural');
 
 -- Insert sample data into Destinations_Activities table
 INSERT INTO `Destinations_Activities` (`destination_id`, `activity_id`)
@@ -88,12 +94,6 @@ VALUES (1, 2),
        (2, 1),
        (3, 2);
 
--- Insert sample data into Activities table
-INSERT INTO `Activities` (`name`, `type`)
-VALUES ('Snorkeling or Diving', 'Outdoor'),
-       ('City Landmark Tour', 'Sightseeing'),
-       ('Museum Exploration', 'Cultural');
-       
 -- Insert sample data into Hotels table
 INSERT INTO `Hotels` (`destination_id`, `name`, `cost_per_night`, `rating`)
 VALUES (3, 'Luxury Seine View Hotel', 400.00, 5.0),
