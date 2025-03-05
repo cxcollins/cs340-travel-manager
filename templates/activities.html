@@ -42,23 +42,6 @@
                     </tr>
                 </tbody>
             </table>
-            <h3>Filter Activities</h3>
-            <form id="filterForm">
-                <div class="filterFormDiv">
-                    <select class="filterDropdown">
-                        <option>Activity ID</option>
-                        <option>Name</option>
-                        <option>Type</option>
-                    </select>
-                    <input
-                        type="text"
-                        id="filter1"
-                        name="filter1"
-                        class="filterText"
-                    />
-                    <button type="submit">Search</button>
-                </div>
-            </form>
             <h3>Add New Activity</h3>
             <form>
                 <div>
@@ -149,33 +132,6 @@
                     }
                 })
             );
-
-let filterCount = 2;
-
-function addFilter() {
-    let filterForm = document.getElementById("filterForm")
-
-    let container = document.createElement("div")
-
-    container.className = "filterFormDiv"
-
-    container.innerHTML = `
-        <select id="select${filterCount}" name="select${filterCount}" class="filterDropdown">
-            <option>Activity ID</option>
-            <option>Name</option>
-            <option>Type</option>
-        </select>
-        <input
-            type="text"
-            id="filter${filterCount}"
-            name="filter${filterCount}"
-            class="filterText"
-        />
-`
-
-    filterForm.appendChild(container)
-    filterCount ++
-}
 
             window.onclick = function (event) {
                 let deleteModal = document.getElementById("deleteModal");
