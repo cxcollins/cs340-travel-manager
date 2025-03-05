@@ -86,7 +86,7 @@
                 <div id="activityIdResult" class="searchResult">Activity ID:</div>
             </form>
             <h3>Add New Destination Activity Intersection</h3>
-            <form id="destinationActivityForm" onsubmit="event.preventDefault(); insertUser();">
+            <form id="destinationActivityForm" onsubmit="event.preventDefault(); insertDestinationActivity();">
                 <div>
                     <label for="destination_id">Destination ID:</label>
                     <input type="text" id="destination_id" name="destination_id" required />
@@ -138,7 +138,7 @@
                 console.log("Page loaded");
             });
 
-          // Get all users
+          // Get all destination activities
           function fetchDestinationActivities() {
                 fetch(`/destination_activities/fetchall`) 
                     .then(response => response.json())
@@ -146,10 +146,8 @@
                         const tbody = document.querySelector("tbody");
                         tbody.innerHTML = "";
 
-                        data.users.forEach(destination_activity => {
+                        data.destinationActivities.forEach(destination_activity => {
                             const row = document.createElement("tr");
-                            // Convert creation date to a date type
-                            user.creation_date = new Date(user.creation_date).toISOString().split("T")[0];
                             
                             row.innerHTML = `
                                 <td>${destination_activity.destination_activity_id}</td>
