@@ -108,7 +108,7 @@ def fetchall_destinations_activities():
 
 # GET DESTINATION ACTIVITY
 @app.route('/destinations_activities/<int:destination_activity_id>', methods=['GET'])
-def get_user(destination_activity_id):
+def get_destination_activity(destination_activity_id):
     cur = mysql.connection.cursor()
     cur.execute("""
                 SELECT * FROM Destinations_Activities
