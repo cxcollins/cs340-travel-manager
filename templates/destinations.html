@@ -44,27 +44,6 @@
                     </tr>
                 </tbody>
             </table>
-            <h3>Filter Destinations</h3>
-            <form id="filterForm">
-                <div class="filterFormDiv">
-                    <select class="filterDropdown">
-                        <option>User Id</option>
-                        <option>First Name</option>
-                        <option>Last Name</option>
-                        <option>Email</option>
-                        <option>Phone Number</option>
-                        <option>Creation Date</option>
-                    </select>
-                    <input
-                        type="text"
-                        id="filter1"
-                        name="filter1"
-                        class="filterText"
-                    />
-                <button type="submit">Search</button>
-            </div>
-            </form>
-            <button onclick="addFilter()">Add another filter</button>
             <h3>Add New Destination</h3>
             <form>
                 <div>
@@ -156,44 +135,6 @@
                     }
                 })
             );
-
-            let filterCount = 2;
-
-            function addFilter() {
-                let filterForm = document.getElementById("filterForm")
-
-                let container = document.createElement("div")
-
-                container.className = "filterFormDiv"
-
-                container.innerHTML = `
-                    <select id="select${filterCount}" name="select${filterCount}" class="filterDropdown">
-                        <option>Destination ID</option>
-                        <option>Country</option>
-                        <option>State</option>
-                        <option>City</option>
-                    </select>
-                    <input
-                        type="text"
-                        id="filter${filterCount}"
-                        name="filter${filterCount}"
-                        class="filterText"
-                    />
-            `
-
-                filterForm.appendChild(container)
-                filterCount ++
-            }
-
-            window.onclick = function (event) {
-                let deleteModal = document.getElementById("deleteModal");
-                let editModal = document.getElementById("editModal");
-                if (event.target === deleteModal) {
-                    closeDeleteModal();
-                } else if (event.target === editModal) {
-                    closeEditModal();
-                }
-            };
         </script>
     </body>
 </html>
