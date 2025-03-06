@@ -2,15 +2,20 @@ from flask import Flask, render_template, json, redirect, request
 from flask_cors import CORS
 from flask_mysqldb import MySQL
 import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
 
-app.config['MYSQL_HOST'] = 'classmysql.engr.oregonstate.edu'
-app.config['MYSQL_USER'] = 'cs340_leebr8'
-app.config['MYSQL_PASSWORD'] = '4358'
-app.config['MYSQL_DB'] = 'cs340_leebr8'
-app.config['MYSQL_CURSORCLASS'] = "DictCursor"
+# Configure MySQL using environment variables
+app.config['MYSQL_HOST'] = os.getenv('MYSQL_HOST')
+app.config['MYSQL_USER'] = os.getenv('MYSQL_USER')
+app.config['MYSQL_PASSWORD'] = os.getenv('MYSQL_PASSWORD')
+app.config['MYSQL_DB'] = os.getenv('MYSQL_DB')
+app.config['MYSQL_CURSORCLASS'] = os.getenv('MYSQL_CURSORCLASS')
 
 mysql = MySQL(app)
 
