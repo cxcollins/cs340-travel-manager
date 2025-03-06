@@ -97,6 +97,24 @@ def delete_user(user_id):
     cur.close()
     return {'message': 'User deleted successfully'}, 200
 
+# FETCH ALL DESTINATIONS
+@app.route('/destinations/fetchall', methods=['GET'])
+def fetchall_destinations():
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM Destinations;")
+    destinations = cur.fetchall()
+    cur.close()
+    return {'destinations': destinations}, 200
+
+# FETCH ALL ACTIVITIES
+@app.route('/activities/fetchall', methods=['GET'])
+def fetchall_activities():
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM Activities;")
+    activities = cur.fetchall()
+    cur.close()
+    return {'activities': activities}, 200
+
 # FETCH ALL DESTINATIONS ACTIVITIES
 @app.route('/destinations_activities/fetchall', methods=['GET'])
 def fetchall_destinations_activities():
