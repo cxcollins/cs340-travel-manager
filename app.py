@@ -179,6 +179,53 @@ def delete_destination_activity(destination_activity_id):
     cur.close()
     return {'message': 'Destination Activity deleted successfully'}, 200
 
+# FETCH ALL TRAVEL PLANS
+@app.route('/travel_plans/fetchall', methods=['GET'])
+def fetchall_travel_plans():
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM Travel_Plans;")
+    travel_plans = cur.fetchall()
+    cur.close()
+    return {'travel_plans': travel_plans}, 200
+
+# INSERT TRAVEL PLAN
+@app.route('/travel_plans/insert', methods=['POST'])
+def create_travel_plan():
+    data = request.json
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        INSERT INTO Travel_Plans (user_id, destination_id, start_date, end_date, budget, status)
+        VALUES (%s, %s, %s, %s, %s, %s);
+    """, (data['user_id'], data['destination_id'], data['start_date'], data['end_date'], data['budget'], data['status']))
+    mysql.connection.commit()
+    cur.close()
+    return {'message': 'Travel Plan added successfully'}, 201
+
+# UPDATE Travel Plan
+@app.route('/travel_plans/update/<int:plan_id>', methods=['PUT'])
+def update_travel_plan(plan_id):
+    data = request.json
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        UPDATE Travel_Plans
+        SET user_id=%s, destination_id=%s, start_date=%s, end_date=%s, budget=%s, status=%s
+        WHERE plan_id=%s;
+    """, (data['user_id'], data['destination_id'], data['start_date'], data['end_date'], data['budget'], data['status'], plan_id))
+    mysql.connection.commit()
+    cur.close()
+    return {'message': 'Travel Plan updated successfully'}, 200
+
+# DELETE Travel Plan
+@app.route('/travel_plans/delete/<int:plan_id>', methods=['DELETE'])
+def delete_travel_plan(plan_id):
+    cur = mysql.connection.cursor()
+    cur.execute("""DELETE FROM Travel_Plans
+                WHERE plan_id = %s;
+    """, (plan_id,))
+    mysql.connection.commit()
+    cur.close()
+    return {'message': 'Travel Plan deleted successfully'}, 200
+
 # Listener
 if __name__ == "__main__":
     app.run(port=7564, debug=True)
