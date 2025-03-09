@@ -180,12 +180,12 @@ def create_destination_activity():
     return {'message': 'Destination Activity added successfully'}, 201
 
 # UPDATE DESTINATION ACTIVITY
-@app.route('/destination_activities/update/<int:destination_activity_id>', methods=['PUT'])
+@app.route('/destinations_activities/update/<int:destination_activity_id>', methods=['PUT'])
 def update_destination_activity(destination_activity_id):
     data = request.json
     cur = mysql.connection.cursor()
     cur.execute("""
-        UPDATE Destination_Activities
+        UPDATE Destinations_Activities
         SET destination_id=%s, activity_id=%s
         WHERE destination_activity_id=%s;
     """, (data['destination_id'], data['activity_id'], destination_activity_id))

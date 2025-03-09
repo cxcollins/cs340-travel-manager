@@ -57,14 +57,19 @@
             <div class="modal-content">
                 <span class="close" onclick="closeEditModal()">&times;</span>
                 <h3>Edit Destination</h3>
-                <form>
+                <form onsubmit="event.preventDefault(); updateDestinationActivity()">
+                    <input type="hidden" id="editDestinationActivityId" name="destination_activity_id">
                     <div>
-                        <label for="editDestinationName">Destination Name:</label>
-                        <input type="text" id="editDestinationName" required />
+                        <label for="editDestinationSelect">Destination:</label>
+                        <select id="editDestinationSelect">
+                            <!-- Dynamic dropdown for destinations goes here -->
+                         </select>
                     </div>
                     <div>
-                        <label for="editActivityName">Activity Name:</label>
-                        <input type="text" id="editActivityName" />
+                        <label for="editActivitySelect">Activity:</label>
+                        <select id="editActivitySelect">
+                            <!-- Dynamic dropdown for activity goes here -->
+                        </select>
                     </div>
                     <div>
                         <button type="submit">Save Changes</button>
@@ -103,16 +108,17 @@
 
                 for (const destinations_activity of data.destinations_activities) {
                     const row = document.createElement("tr");
+                    const destinationActivityId = destinations_activity.destination_activity_id;
                     const destinationName = destinationMap[destinations_activity.destination_id];
                     const activityName = activityMap[destinations_activity.activity_id];
 
                     row.innerHTML = `
-                        <td>${destinations_activity.destination_activity_id}</td>
+                        <td>${destinationActivityId}</td>
                         <td>${destinationName}</td>
                         <td>${activityName}</td>
                         <td class="centerButtons">
-                            <button onclick="openEditModal('${destinationName}', '${activityName}')">Edit</button>
-                            <button onclick="deleteDestinationActivity(${destinations_activity.destination_activity_id})">Delete</button>
+                            <button onclick="openEditModal('${destinationActivityId}', '${destinationName}', '${activityName}')">Edit</button>
+                            <button onclick="deleteDestinationActivity(${destinationActivityId})">Delete</button>
                         </td>
                     `;
                     tbody.appendChild(row);
@@ -169,7 +175,7 @@
                 // Reset the dropdowns
                 document.getElementById("destination_id").innerHTML = "";
                 document.getElementById("activity_id").innerHTML = "";
-                
+
                 // Fetch destinations and activities in parallel
                 await Promise.all([
                     fetchDestinations(),
@@ -184,14 +190,15 @@
             }
 
             // Update destination activity
-            function updateDestinationActivity(destinationActivityId) {
-                const destinationName = document.getElementById("editDestinationName").value;
-                const activityName = document.getElementById("editActivityName").value;
+            function updateDestinationActivity() {
+                const destinationActivityId = document.getElementById("editDestinationActivityId").value;
+                const destinationId = document.getElementById("editDestinationSelect").value;
+                const activityId = document.getElementById("editActivitySelect").value;
                 const updatedDestinationActivity = {
-                    destinationActivityId: destinationActivityId,
-                    destinationID:ddestinationMap[destinationName], // Convert back to ID
-                    activityId: activityMap[activityName] // Convert back to ID
+                    destination_id: destinationId,
+                    activity_id: activityId
                 };
+                console.log(updatedDestinationActivity);
 
                 fetch(`/destinations_activities/update/${destinationActivityId}`, {
                     method: "PUT",
@@ -200,7 +207,7 @@
                 })
                 .then(response => response.json())
                 .then(() => {
-                    fetchDestinationsActivities();
+                    refreshData();
                     closeEditModal();
                 });
             }
@@ -234,12 +241,44 @@
                     refreshData()});
             }
 
-            function openEditModal(destinationName, activityName) {
-                document.getElementById("editDestinationName").value = destinationName;
-                document.getElementById("editActivityName").value = activityName;
+            function openEditModal(destinationActivityId, destinationName, activityName) {
+                document.getElementById("editDestinationActivityId").value = destinationActivityId;
+                const destinationDropdown = document.getElementById("editDestinationSelect");
+                const activityDropdown = document.getElementById("editActivitySelect");
+
+                // Clear old options
+                destinationDropdown.innerHTML = "";
+                activityDropdown.innerHTML = "";
+
+                // Populate destinations dropdown
+                Object.entries(destinationMap).forEach(([id, name]) => {
+                    const option = document.createElement("option");
+                    option.value = id;
+                    option.textContent = name; 
+
+                    if (name === destinationName) {
+                        option.selected = true;
+                    }
+
+                    destinationDropdown.appendChild(option);
+                });
+
+                // Populate activities dropdown
+                Object.entries(activityMap).forEach(([id, name]) => {
+                    const option = document.createElement("option");
+                    option.value = id;
+                    option.textContent = name;
+
+                    if (name === activityName) {
+                        option.selected = true;
+                    }
+
+                    activityDropdown.appendChild(option);
+                });
+
                 document.getElementById("editModal").classList.remove("hidden");
             }
-
+            
             function closeEditModal() {
                 document.getElementById("editModal").classList.add("hidden");
             }
