@@ -25,8 +25,8 @@
                 <thead>
                     <tr>
                         <th>Destination Activity ID</th>
-                        <th>Destination ID</th>
-                        <th>Activity ID</th>
+                        <th>Destination Name</th>
+                        <th>Activity Name</th>
                         <th>Actions</th>
 `                    </tr>
                 </thead>
@@ -59,11 +59,11 @@
                 <h3>Edit Destination</h3>
                 <form>
                     <div>
-                        <label for="editDestinationId">Destination ID:</label>
+                        <label for="editDestinationId">Destination Name:</label>
                         <input type="text" id="editDestinationID" required />
                     </div>
                     <div>
-                        <label for="editActivityId">Activity ID:</label>
+                        <label for="editActivityId">Activity Name:</label>
                         <input type="text" id="editActivityId" />
                     </div>
                     <div>
@@ -92,28 +92,49 @@
                 console.log("Page loaded");
             });
 
-          // Get all destination activities
-          function fetchDestinationsActivities() {
-                fetch(`/destinations_activities/fetchall`) 
+            // Get all destination activities
+            async function fetchDestinationsActivities() {
+                const response = await fetch(`/destinations_activities/fetchall`);
+                const data = await response.json();
+                const tbody = document.querySelector("tbody");
+
+                for (const destinations_activity of data.destinations_activities) {
+                    const row = document.createElement("tr");
+                    const destinationName = await mapDestinationIdToName(destinations_activity.destination_id);
+                    const activityName = await mapActivityIdToName(destinations_activity.activity_id);
+
+                    row.innerHTML = `
+                        <td>${destinations_activity.destination_activity_id}</td>
+                        <td>${destinationName}</td>
+                        <td>${activityName}</td>
+                        <td class="centerButtons">
+                            <button onclick="openEditModal('${destinationName}', '${activityName}')">Edit</button>
+                            <button onclick="deleteDestinationActivity(${destinations_activity.destination_activity_id})">Delete</button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                }
+            }
+
+            // Map the FK ID to the destination name
+            async function mapDestinationIdToName(destinationId) {
+                return fetch(`/destinations/${destinationId}`)
                     .then(response => response.json())
                     .then(data => {
-                        const tbody = document.querySelector("tbody");
+                        return (data.city + 
+                            (data.state ? ', ' + 
+                            data.state : '') + ', ' + 
+                            data.country);
+                    })
+            }
 
-                        data.destinations_activities.forEach(destinations_activity => {
-                            const row = document.createElement("tr");
-                            
-                            row.innerHTML = `
-                                <td>${destinations_activity.destination_activity_id}</td>
-                                <td>${destinations_activity.destination_id}</td>
-                                <td>${destinations_activity.activity_id}</td>
-                                <td class="centerButtons">
-                                    <button onclick="openEditModal('${destinations_activity.destination_id}', '${destinations_activity.activity_id}')">Edit</button>
-                                    <button onclick="deleteDestinationActivity(${destinations_activity.destination_activity_id})">Delete</button>
-                                </td>
-                            `;
-                            tbody.appendChild(row);
-                        });
-                    });
+            // Map the FK ID to the activity name
+            async function mapActivityIdToName(activityId) {
+                return fetch(`/activities/${activityId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        return data.name;
+                    })
             }
 
             // Get all destinations for dropdown
