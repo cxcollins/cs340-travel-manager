@@ -47,7 +47,7 @@
                 </div>
                 <div>
                     <label for="insert_destination_dropdown">Destination:</label>
-                    <select id="insert_destination_dropdown" name="insert_destination_dropdown" required></select>
+                    <select id="insert_destination_dropdown" name="insert_destination_dropdown"></select>
                 </div>
                 <div>
                     <label for="insert_start_date">Start Date:</label>
@@ -91,7 +91,7 @@
                     </div>
                     <div>
                         <label for="editDestinationSelect">Destination:</label>
-                        <select id="editDestinationSelect" name="editDestinationSelect" required></select>
+                        <select id="editDestinationSelect" name="editDestinationSelect"></select>
                     </div>
                     <div>
                         <label for="editStartDate">Start Date:</label>
@@ -231,8 +231,8 @@
             // Refresh the data
             async function refreshData() {
                 // Reset the dropdowns
-                // document.getElementById("insert_user_dropdown").innerHTML = "";
-                // document.getElementById("insert_destination_dropdown").innerHTML = "";
+                document.getElementById("insert_user_dropdown").innerHTML = "";
+                document.getElementById("insert_destination_dropdown").innerHTML = "";
 
                 // Fetch destinations and users in parallel
                 await Promise.all([
@@ -247,7 +247,7 @@
 
             }
 
-            // Insert new travel_plan
+            // Insert new travel plan
             function insertTravelPlan() {
                 const userId = document.getElementById("insert_user_dropdown").value;
                 const destinationId = document.getElementById("insert_destination_dropdown").value;
@@ -273,7 +273,53 @@
                     refreshData()});
             }
 
-            function openEditModal(userID, destinationID, startDate, endDate, budget, status) {
+            // Convert date object to YYYY-MM-DD format
+            function formatDateForInput(dateString) {
+                const date = new Date(dateString);
+                return date.toISOString().split("T")[0];
+            }
+
+            // Update travel_plan
+            function updateTravelPlan() {
+                const planId = document.getElementById("editPlanId").value;
+                const userId = document.getElementById("editUserSelect").value;
+                const destinationId = document.getElementById("editDestinationSelect").value;
+                const startDate = document.getElementById("editStartDate").value;
+                const endDate = document.getElementById("editEndDate").value;
+                const budget = document.getElementById("editBudget").value;
+                const status = document.getElementById("editStatus").value;
+                const updatedTravelPlan = {
+                    user_id: userId,
+                    destination_id: destinationId,
+                    start_date: startDate,
+                    end_date: endDate,
+                    budget: budget,
+                    status: status
+                };
+                fetch(`/travel_plans/update/${planId}`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(updatedTravelPlan)
+                })
+                .then(response => response.json())
+                .then(() => {
+                    refreshData();
+                    closeEditModal();
+                });
+            }
+
+            // Delete travel plan
+            function deleteTravelPlan(planId) {
+                if (confirm("Are you sure you want to delete this travel plan?")) {
+                    fetch(`/travel_plans/delete/${planId}`, {
+                        method: "DELETE"
+                    })
+                    .then(response => response.json())
+                    .then(() => refreshData());
+                }
+            }
+
+            function openEditModal(planId, userName, destinationName, startDate, endDate, budget, status) {
                 document.getElementById("editPlanId").value = planId;
                 const userDropdown = document.getElementById("editUserSelect");
                 const destinationDropdown = document.getElementById("editDestinationSelect");
@@ -307,6 +353,12 @@
 
                     destinationDropdown.appendChild(option);
                 });
+
+                // Set other fields
+                document.getElementById("editStartDate").value = formatDateForInput(startDate);
+                document.getElementById("editEndDate").value = formatDateForInput(endDate);
+                document.getElementById("editBudget").value = budget;
+                document.getElementById("editStatus").value = status;
 
 
                 document.getElementById("editModal").classList.remove("hidden");
