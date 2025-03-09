@@ -167,7 +167,7 @@ def get_destination_activity(destination_activity_id):
     return destination_activity if destination_activity else {}, 200
 
 # INSERT DESTINATION ACTIVITY
-@app.route('/destination_activities/insert', methods=['POST'])
+@app.route('/destinations_activities/insert', methods=['POST'])
 def create_destination_activity():
     data = request.json
     cur = mysql.connection.cursor()
@@ -194,7 +194,7 @@ def update_destination_activity(destination_activity_id):
     return {'message': 'Destination Activity updated successfully'}, 200
 
 # DELETE DESTINATION ACTIVITY
-@app.route('/destination_activities/delete/<int:destination_activity_id>', methods=['DELETE'])
+@app.route('/destinations_activities/delete/<int:destination_activity_id>', methods=['DELETE'])
 def delete_destination_activity(destination_activity_id):
     cur = mysql.connection.cursor()
     cur.execute("""DELETE FROM Destination_Activities

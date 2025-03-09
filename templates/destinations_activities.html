@@ -59,12 +59,12 @@
                 <h3>Edit Destination</h3>
                 <form>
                     <div>
-                        <label for="editDestinationId">Destination Name:</label>
-                        <input type="text" id="editDestinationID" required />
+                        <label for="editDestinationName">Destination Name:</label>
+                        <input type="text" id="editDestinationName" required />
                     </div>
                     <div>
-                        <label for="editActivityId">Activity Name:</label>
-                        <input type="text" id="editActivityId" />
+                        <label for="editActivityName">Activity Name:</label>
+                        <input type="text" id="editActivityName" />
                     </div>
                     <div>
                         <button type="submit">Save Changes</button>
@@ -84,11 +84,22 @@
             </div>
         </div>
         <script>
+            // CONSTANTS
+            const destinationMap = {}; // Map ID to destination name
+            const activityMap = {}; // Map ID to activity name
+
             // Fetch destination activities when the page loads
-            document.addEventListener("DOMContentLoaded", function () {
-                fetchDestinationsActivities();
-                fetchDestinations();
-                fetchActivities();
+            document.addEventListener("DOMContentLoaded", async function () {
+                // Fetch destinations and activities in parallel
+                await Promise.all([
+                    fetchDestinations(),
+                    fetchActivities()
+                ]);
+                // Wait for the maps to be populated before fetching destination activities
+                await waitForMapToBeReady(destinationMap);
+                await waitForMapToBeReady(activityMap);
+
+                await fetchDestinationsActivities();
                 console.log("Page loaded");
             });
 
@@ -100,8 +111,8 @@
 
                 for (const destinations_activity of data.destinations_activities) {
                     const row = document.createElement("tr");
-                    const destinationName = await mapDestinationIdToName(destinations_activity.destination_id);
-                    const activityName = await mapActivityIdToName(destinations_activity.activity_id);
+                    const destinationName = destinationMap[destinations_activity.destination_id];
+                    const activityName = activityMap[destinations_activity.activity_id];
 
                     row.innerHTML = `
                         <td>${destinations_activity.destination_activity_id}</td>
@@ -116,27 +127,6 @@
                 }
             }
 
-            // Map the FK ID to the destination name
-            async function mapDestinationIdToName(destinationId) {
-                return fetch(`/destinations/${destinationId}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        return (data.city + 
-                            (data.state ? ', ' + 
-                            data.state : '') + ', ' + 
-                            data.country);
-                    })
-            }
-
-            // Map the FK ID to the activity name
-            async function mapActivityIdToName(activityId) {
-                return fetch(`/activities/${activityId}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        return data.name;
-                    })
-            }
-
             // Get all destinations for dropdown
             function fetchDestinations() {
                 fetch(`/destinations/fetchall`)
@@ -145,9 +135,12 @@
                         const destinationsSelect = document.getElementById("destination_id")
 
                         data.destinations.forEach(destination => {
+                            const name = `${destination.city}${destination.state ? ', ' + destination.state : ''}, ${destination.country}`
+                            destinationMap[destination.destination_id] = name
+
                             let option = document.createElement("option");
-                            option.value = destination.destination_id
-                            option.innerHTML = `${destination.city}${destination.state ? ', ' + destination.state : ''}, ${destination.country}`
+                            option.value = name;
+                            option.innerHTML = name;
                             destinationsSelect.appendChild(option)
                         })
                     })
@@ -161,32 +154,51 @@
                         const activitiesSelect = document.getElementById("activity_id")
 
                         data.activities.forEach(activity => {
+                            const name = activity.name
+                            activityMap[activity.activity_id] = name
+
                             let option = document.createElement("option")
-                            option.value = activity.activity_id
-                            option.innerHTML = `${activity.name}`
+                            option.value = name
+                            option.innerHTML = name
                             activitiesSelect.appendChild(option)
                         })
                     })
             }
-
-            // Update destination_activity
-            function openEditModal(destinationActivityId, destinationId, activityId) {
-                document.getElementById("editDestinationActivityId").value = destinationActivityId;
-                document.getElementById("editDestinationId").value = destinationId;
-                document.getElementById("editActivityId").value = activityId;
-                document.getElementById("editModal").classList.remove("hidden");
-
-                document.querySelector("#editModal form").onsubmit = function (event) {
-                    event.preventDefault();
-                    updateDestinationActivity(destinationActivityId);
-                };
+            
+            // Wait for map to be populated
+            async function waitForMapToBeReady(map) {
+                while (Object.keys(map).length === 0) {
+                    console.log("Waiting for map to be populated...");
+                    await new Promise(resolve => setTimeout(resolve, 100)); // Wait 100ms
+                }
+            }
+            
+            // Get destination ID from name
+            function getDestinationId(destinationName) {
+                for (const [id, name] of Object.entries(destinationMap)) {
+                    if (name === destinationName) {
+                        return id;
+                    }
+                }
             }
 
+            // Get activity ID from name
+            function getActivityId(activityName) {
+                for (const [id, name] of Object.entries(activityMap)) {
+                    if (name === activityName) {
+                        return id;
+                    }
+                }
+            }
+
+            // Update destination activity
             function updateDestinationActivity(destinationActivityId) {
+                const destinationName = document.getElementById("editDestinationName").value;
+                const activityName = document.getElementById("editActivityName").value;
                 const updatedDestinationActivity = {
-                    destination_activity_id: document.getElementById("editDestinationActivityId").value,
-                    destination_id: document.getElementById("editDestinationId").value,
-                    activity_id: document.getElementById("editActivityId").value
+                    destinationActivityId: destinationActivityId,
+                    destinationID:ddestinationMap[destinationName], // Convert back to ID
+                    activityId: activityMap[activityName] // Convert back to ID
                 };
 
                 fetch(`/destinations_activities/update/${destinationActivityId}`, {
@@ -196,7 +208,7 @@
                 })
                 .then(response => response.json())
                 .then(() => {
-                    fetchDestinationActivities();
+                    fetchDestinationsActivities();
                     closeEditModal();
                 });
             }
@@ -208,16 +220,19 @@
                         method: "DELETE"
                     })
                     .then(response => response.json())
-                    .then(() => fetchDestinationActivities());
+                    .then(() => fetchDestinationsActivities());
                 }
             }
 
             // Insert new destination activity
             function insertDestinationActivity() {
+                const destinationName = document.getElementById("destination_id").value;
+                const activityName = document.getElementById("activity_id").value;
                 const newDestinationActivity = {
-                    destination_id: document.getElementById("destinationId").value,
-                    activity_id: document.getElementById("activityId").value
+                    destination_id: getDestinationId(destinationName),
+                    activity_id: getActivityId(activityName)
                 };
+                console.log(newDestinationActivity);
 
                 fetch(`/destinations_activities/insert`, {
                     method: "POST",
@@ -226,15 +241,15 @@
                 })
                 .then(response => response.json())
                 .then(() => {
-                    fetchDestinationActivities();
+                    fetchDestinationsActivities();
                     document.getElementById("destinationActivityForm").reset();
                 });
             }
 
-            function openEditModal(destination_activity_id, destination_id, activity_id) {
-                document.getElementById("editDestinationActivityId").value = destination_activity_id;
-                document.getElementById("editDestinationId").value = destination_id;
-                document.getElementById("editActivityId").value = activity_id;
+            function openEditModal(destinationActivityId, destinationName, activityName) {
+                document.getElementById("editDestinationActivityId").value = destinationActivityId;
+                document.getElementById("editDestinationName").value = destinationName;
+                document.getElementById("editActivityName").value = activityName;
                 document.getElementById("editModal").classList.remove("hidden");
             }
 
