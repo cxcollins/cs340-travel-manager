@@ -193,10 +193,11 @@ def fetchall_travel_plans():
 def create_travel_plan():
     data = request.json
     cur = mysql.connection.cursor()
+    nullableDestinationId = data.get('destination_id')
     cur.execute("""
         INSERT INTO Travel_Plans (user_id, destination_id, start_date, end_date, budget, status)
         VALUES (%s, %s, %s, %s, %s, %s);
-    """, (data['user_id'], data['destination_id'], data['start_date'], data['end_date'], data['budget'], data['status']))
+    """, (data['user_id'], nullableDestinationId, data['start_date'], data['end_date'], data['budget'], data['status']))
     mysql.connection.commit()
     cur.close()
     return {'message': 'Travel Plan added successfully'}, 201
@@ -206,11 +207,12 @@ def create_travel_plan():
 def update_travel_plan(plan_id):
     data = request.json
     cur = mysql.connection.cursor()
+    nullableDestinationId = data.get('destination_id')
     cur.execute("""
         UPDATE Travel_Plans
         SET user_id=%s, destination_id=%s, start_date=%s, end_date=%s, budget=%s, status=%s
         WHERE plan_id=%s;
-    """, (data['user_id'], data['destination_id'], data['start_date'], data['end_date'], data['budget'], data['status'], plan_id))
+    """, (data['user_id'], nullableDestinationId, data['start_date'], data['end_date'], data['budget'], data['status'], plan_id))
     mysql.connection.commit()
     cur.close()
     return {'message': 'Travel Plan updated successfully'}, 200

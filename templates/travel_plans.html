@@ -161,7 +161,7 @@
                 for (const travel_plan of data.travel_plans) {
                     const row = document.createElement("tr");
                     const planId = travel_plan.plan_id;
-                    const destinationName = destinationMap[travel_plan.destination_id];
+                    const destinationName = destinationMap[travel_plan.destination_id] || "None";
                     const userName = userMap[travel_plan.user_id];
 
                     row.innerHTML = `
@@ -203,10 +203,10 @@
 
             // Get all destinations for dropdown
             function fetchDestinations() {
+                const destinationsSelect = document.getElementById("insert_destination_dropdown")
                 fetch(`/destinations/fetchall`)
                     .then(response => response.json())
                     .then(data => {
-                        const destinationsSelect = document.getElementById("insert_destination_dropdown")
 
                         data.destinations.forEach(destination => {
                             const name = `${destination.city}${destination.state ? ', ' + destination.state : ''}, ${destination.country}`
@@ -217,6 +217,13 @@
                             option.innerHTML = name;
                             destinationsSelect.appendChild(option)
                         })
+                    })
+                    // Append a "None" option
+                    .then(() => {
+                        let option = document.createElement("option");
+                        option.value = "";
+                        option.innerHTML = "None";
+                        destinationsSelect.appendChild(option);
                     })
                 }
 
@@ -250,7 +257,7 @@
             // Insert new travel plan
             function insertTravelPlan() {
                 const userId = document.getElementById("insert_user_dropdown").value;
-                const destinationId = document.getElementById("insert_destination_dropdown").value;
+                const destinationId = document.getElementById("insert_destination_dropdown").value || null;
                 const startDate = document.getElementById("insert_start_date").value;
                 const endDate = document.getElementById("insert_end_date").value;
                 const budget = document.getElementById("insert_budget").value;
@@ -283,7 +290,7 @@
             function updateTravelPlan() {
                 const planId = document.getElementById("editPlanId").value;
                 const userId = document.getElementById("editUserSelect").value;
-                const destinationId = document.getElementById("editDestinationSelect").value;
+                const destinationId = document.getElementById("editDestinationSelect").value || null;
                 const startDate = document.getElementById("editStartDate").value;
                 const endDate = document.getElementById("editEndDate").value;
                 const budget = document.getElementById("editBudget").value;
@@ -353,6 +360,11 @@
 
                     destinationDropdown.appendChild(option);
                 });
+                // Append a "None" option
+                let option = document.createElement("option");
+                option.value = "";
+                option.innerHTML = "None";
+                destinationDropdown.appendChild(option);
 
                 // Set other fields
                 document.getElementById("editStartDate").value = formatDateForInput(startDate);
