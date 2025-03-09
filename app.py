@@ -132,18 +132,6 @@ def fetchall_activities():
     cur.close()
     return {'activities': activities}, 200
 
-# GET ACTIVITY
-@app.route('/activities/<int:activity_id>', methods=['GET'])
-def get_activity(activity_id):
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM Activities WHERE activity_id = %s;", (activity_id,))
-    activity = cur.fetchone()
-    cur.close()
-    if activity:
-        return activity, 200
-    else:
-        return {'message': 'Activity not found'}, 404
-
 # FETCH ALL DESTINATIONS ACTIVITIES
 @app.route('/destinations_activities/fetchall', methods=['GET'])
 def fetchall_destinations_activities():
@@ -152,19 +140,6 @@ def fetchall_destinations_activities():
     destinations_activities = cur.fetchall()
     cur.close()
     return {'destinations_activities': destinations_activities}, 200
-
-
-# GET DESTINATION ACTIVITY
-@app.route('/destinations_activities/<int:destination_activity_id>', methods=['GET'])
-def get_destination_activity(destination_activity_id):
-    cur = mysql.connection.cursor()
-    cur.execute("""
-                SELECT * FROM Destinations_Activities
-                WHERE destination_activity_id = %s;
-    """, (destination_activity_id,))
-    destination_activity = cur.fetchone()
-    cur.close()
-    return destination_activity if destination_activity else {}, 200
 
 # INSERT DESTINATION ACTIVITY
 @app.route('/destinations_activities/insert', methods=['POST'])
