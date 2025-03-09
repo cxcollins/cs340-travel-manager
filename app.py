@@ -197,7 +197,7 @@ def update_destination_activity(destination_activity_id):
 @app.route('/destinations_activities/delete/<int:destination_activity_id>', methods=['DELETE'])
 def delete_destination_activity(destination_activity_id):
     cur = mysql.connection.cursor()
-    cur.execute("""DELETE FROM Destination_Activities
+    cur.execute("""DELETE FROM Destinations_Activities
                 WHERE destination_activity_id = %s;
     """, (destination_activity_id,))
     mysql.connection.commit()
