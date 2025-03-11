@@ -25,10 +25,10 @@
                 <thead>
                     <tr>
                         <th>Destination Activity ID</th>
-                        <th>Destination ID</th>
-                        <th>Activity ID</th>
+                        <th>Destination Name</th>
+                        <th>Activity Name</th>
                         <th>Actions</th>
-`                    </tr>
+                    </tr>
                 </thead>
                 <tbody>
                     <!-- Table data gets populated here -->
@@ -57,14 +57,19 @@
             <div class="modal-content">
                 <span class="close" onclick="closeEditModal()">&times;</span>
                 <h3>Edit Destination</h3>
-                <form>
+                <form onsubmit="event.preventDefault(); updateDestinationActivity()">
+                    <input type="hidden" id="editDestinationActivityId" name="destination_activity_id">
                     <div>
-                        <label for="editDestinationId">Destination ID:</label>
-                        <input type="text" id="editDestinationID" required />
+                        <label for="editDestinationSelect">Destination:</label>
+                        <select id="editDestinationSelect">
+                            <!-- Dynamic dropdown for destinations goes here -->
+                         </select>
                     </div>
                     <div>
-                        <label for="editActivityId">Activity ID:</label>
-                        <input type="text" id="editActivityId" />
+                        <label for="editActivitySelect">Activity:</label>
+                        <select id="editActivitySelect">
+                            <!-- Dynamic dropdown for activity goes here -->
+                        </select>
                     </div>
                     <div>
                         <button type="submit">Save Changes</button>
@@ -84,36 +89,40 @@
             </div>
         </div>
         <script>
+            // CONSTANTS
+            const destinationMap = {}; // Map ID to destination name
+            const activityMap = {}; // Map ID to activity name
+
             // Fetch destination activities when the page loads
-            document.addEventListener("DOMContentLoaded", function () {
-                fetchDestinationsActivities();
-                fetchDestinations();
-                fetchActivities();
+            document.addEventListener("DOMContentLoaded", async function () {
+                await refreshData();
                 console.log("Page loaded");
             });
 
-          // Get all destination activities
-          function fetchDestinationsActivities() {
-                fetch(`/destinations_activities/fetchall`) 
-                    .then(response => response.json())
-                    .then(data => {
-                        const tbody = document.querySelector("tbody");
+            // Get all destination activities
+            async function fetchDestinationsActivities() {
+                const response = await fetch(`/destinations_activities/fetchall`);
+                const data = await response.json();
+                const tbody = document.querySelector("tbody");
+                tbody.innerHTML = "";
 
-                        data.destinations_activities.forEach(destinations_activity => {
-                            const row = document.createElement("tr");
-                            
-                            row.innerHTML = `
-                                <td>${destinations_activity.destination_activity_id}</td>
-                                <td>${destinations_activity.destination_id}</td>
-                                <td>${destinations_activity.activity_id}</td>
-                                <td class="centerButtons">
-                                    <button onclick="openEditModal('${destinations_activity.destination_id}', '${destinations_activity.activity_id}')">Edit</button>
-                                    <button onclick="deleteDestinationActivity(${destinations_activity.destination_activity_id})">Delete</button>
-                                </td>
-                            `;
-                            tbody.appendChild(row);
-                        });
-                    });
+                for (const destinations_activity of data.destinations_activities) {
+                    const row = document.createElement("tr");
+                    const destinationActivityId = destinations_activity.destination_activity_id;
+                    const destinationName = destinationMap[destinations_activity.destination_id];
+                    const activityName = activityMap[destinations_activity.activity_id];
+
+                    row.innerHTML = `
+                        <td>${destinationActivityId}</td>
+                        <td>${destinationName}</td>
+                        <td>${activityName}</td>
+                        <td class="centerButtons">
+                            <button onclick="openEditModal('${destinationActivityId}', '${destinationName}', '${activityName}')">Edit</button>
+                            <button onclick="deleteDestinationActivity(${destinationActivityId})">Delete</button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                }
             }
 
             // Get all destinations for dropdown
@@ -124,9 +133,12 @@
                         const destinationsSelect = document.getElementById("destination_id")
 
                         data.destinations.forEach(destination => {
+                            const name = `${destination.city}${destination.state ? ', ' + destination.state : ''}, ${destination.country}`
+                            destinationMap[destination.destination_id] = name
+
                             let option = document.createElement("option");
-                            option.value = destination.destination_id
-                            option.innerHTML = `${destination.city}${destination.state ? ', ' + destination.state : ''}, ${destination.country}`
+                            option.value = destination.destination_id;
+                            option.innerHTML = name;
                             destinationsSelect.appendChild(option)
                         })
                     })
@@ -140,33 +152,53 @@
                         const activitiesSelect = document.getElementById("activity_id")
 
                         data.activities.forEach(activity => {
+                            activityMap[activity.activity_id] = activity.name
+
                             let option = document.createElement("option")
                             option.value = activity.activity_id
-                            option.innerHTML = `${activity.name}`
+                            option.innerHTML = activity.name
                             activitiesSelect.appendChild(option)
                         })
                     })
             }
+            
+            // Wait for map to be populated
+            async function waitForMapToBeReady(map) {
+                while (Object.keys(map).length === 0) {
+                    console.log("Waiting for map to be populated...");
+                    await new Promise(resolve => setTimeout(resolve, 100)); // Wait 100ms
+                }
+            }
+            
+            // Refresh the data
+            async function refreshData() {
+                // Reset the dropdowns
+                document.getElementById("destination_id").innerHTML = "";
+                document.getElementById("activity_id").innerHTML = "";
 
-            // Update destination_activity
-            function openEditModal(destinationActivityId, destinationId, activityId) {
-                document.getElementById("editDestinationActivityId").value = destinationActivityId;
-                document.getElementById("editDestinationId").value = destinationId;
-                document.getElementById("editActivityId").value = activityId;
-                document.getElementById("editModal").classList.remove("hidden");
+                // Fetch destinations and activities in parallel
+                await Promise.all([
+                    fetchDestinations(),
+                    fetchActivities()
+                ]);
+                // Wait for the maps to be populated before fetching destination activities
+                await waitForMapToBeReady(destinationMap);
+                await waitForMapToBeReady(activityMap);
 
-                document.querySelector("#editModal form").onsubmit = function (event) {
-                    event.preventDefault();
-                    updateDestinationActivity(destinationActivityId);
-                };
+                await fetchDestinationsActivities();
+
             }
 
-            function updateDestinationActivity(destinationActivityId) {
+            // Update destination activity
+            function updateDestinationActivity() {
+                const destinationActivityId = document.getElementById("editDestinationActivityId").value;
+                const destinationId = document.getElementById("editDestinationSelect").value;
+                const activityId = document.getElementById("editActivitySelect").value;
                 const updatedDestinationActivity = {
-                    destination_activity_id: document.getElementById("editDestinationActivityId").value,
-                    destination_id: document.getElementById("editDestinationId").value,
-                    activity_id: document.getElementById("editActivityId").value
+                    destination_id: destinationId,
+                    activity_id: activityId
                 };
+                console.log(updatedDestinationActivity);
 
                 fetch(`/destinations_activities/update/${destinationActivityId}`, {
                     method: "PUT",
@@ -175,7 +207,7 @@
                 })
                 .then(response => response.json())
                 .then(() => {
-                    fetchDestinationActivities();
+                    refreshData();
                     closeEditModal();
                 });
             }
@@ -187,17 +219,18 @@
                         method: "DELETE"
                     })
                     .then(response => response.json())
-                    .then(() => fetchDestinationActivities());
+                    .then(() => refreshData());
                 }
             }
 
             // Insert new destination activity
             function insertDestinationActivity() {
+                const destinationId = document.getElementById("destination_id").value;
+                const activityId = document.getElementById("activity_id").value;
                 const newDestinationActivity = {
-                    destination_id: document.getElementById("destinationId").value,
-                    activity_id: document.getElementById("activityId").value
+                    destination_id: destinationId,
+                    activity_id: activityId
                 };
-
                 fetch(`/destinations_activities/insert`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
@@ -205,48 +238,50 @@
                 })
                 .then(response => response.json())
                 .then(() => {
-                    fetchDestinationActivities();
-                    document.getElementById("destinationActivityForm").reset();
-                });
+                    refreshData()});
             }
 
-            function openEditModal(destination_activity_id, destination_id, activity_id) {
-                document.getElementById("editDestinationActivityId").value = destination_activity_id;
-                document.getElementById("editDestinationId").value = destination_id;
-                document.getElementById("editActivityId").value = activity_id;
+            function openEditModal(destinationActivityId, destinationName, activityName) {
+                document.getElementById("editDestinationActivityId").value = destinationActivityId;
+                const destinationDropdown = document.getElementById("editDestinationSelect");
+                const activityDropdown = document.getElementById("editActivitySelect");
+
+                // Clear old options
+                destinationDropdown.innerHTML = "";
+                activityDropdown.innerHTML = "";
+
+                // Populate destinations dropdown
+                Object.entries(destinationMap).forEach(([id, name]) => {
+                    const option = document.createElement("option");
+                    option.value = id;
+                    option.textContent = name; 
+
+                    if (name === destinationName) {
+                        option.selected = true;
+                    }
+
+                    destinationDropdown.appendChild(option);
+                });
+
+                // Populate activities dropdown
+                Object.entries(activityMap).forEach(([id, name]) => {
+                    const option = document.createElement("option");
+                    option.value = id;
+                    option.textContent = name;
+
+                    if (name === activityName) {
+                        option.selected = true;
+                    }
+
+                    activityDropdown.appendChild(option);
+                });
+
                 document.getElementById("editModal").classList.remove("hidden");
             }
-
+            
             function closeEditModal() {
                 document.getElementById("editModal").classList.add("hidden");
             }
-
-            function openDeleteModal() {
-                document
-                    .getElementById("deleteModal")
-                    .classList.remove("hidden");
-            }
-
-            function closeDeleteModal() {
-                document.getElementById("deleteModal").classList.add("hidden");
-            }
-
-            document.querySelectorAll("button").forEach((button) =>
-                button.addEventListener("click", function (event) {
-                    if (event.target.textContent === "Edit") {
-                        openEditModal(
-                            event.target.parentElement.parentElement.children[1]
-                                .textContent,
-                            event.target.parentElement.parentElement.children[2]
-                                .textContent,
-                            event.target.parentElement.parentElement.children[3]
-                                .textContent
-                        );
-                    } else if (event.target.textContent === "Delete") {
-                        openDeleteModal();
-                    }
-                })
-            );
 
             window.onclick = function (event) {
                 let deleteModal = document.getElementById("deleteModal");
