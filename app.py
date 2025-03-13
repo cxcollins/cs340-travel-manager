@@ -123,6 +123,44 @@ def get_destination(destination_id):
     else:
         return {'message': 'Destination not found'}, 404
 
+# UPDATE DESTINATION
+@app.route('/destinations/update/<int:destination_id>', methods=['PUT'])
+def update_destination(destination_id):
+    data = request.json
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        UPDATE Destinations
+        SET country=%s, state=%s, city=%s
+        WHERE destination_id=%s;
+    """, (data['country'], data['state'], data['city'], destination_id))
+    mysql.connection.commit()
+    cur.close()
+    return {'message': 'Destination updated successfully'}, 200
+
+# DELETE DESTINATION
+@app.route('/destinations/delete/<int:destination_id>', methods=['DELETE'])
+def delete_destination(destination_id):
+    cur = mysql.connection.cursor()
+    cur.execute("""DELETE FROM Destinations
+                WHERE destination_id = %s;
+    """, (destination_id,))
+    mysql.connection.commit()
+    cur.close()
+    return {'message': 'Destination deleted successfully'}, 200
+
+# INSERT DESTINATION
+@app.route('/destinations/insert', methods=['POST'])
+def create_destination():
+    data = request.json
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        INSERT INTO Destinations (country, state, city)
+        VALUES (%s, %s, %s);
+    """, (data['country'], data['state'], data['city']))
+    mysql.connection.commit()
+    cur.close()
+    return {'message': 'Destinations added successfully'}, 201
+
 # FETCH ALL ACTIVITIES
 @app.route('/activities/fetchall', methods=['GET'])
 def fetchall_activities():
@@ -131,6 +169,44 @@ def fetchall_activities():
     activities = cur.fetchall()
     cur.close()
     return {'activities': activities}, 200
+
+# UPDATE ACTIVITY
+@app.route('/activities/update/<int:activity_id>', methods=['PUT'])
+def update_activity(activity_id):
+    data = request.json
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        UPDATE Activities
+        SET name=%s, type=%s
+        WHERE activity_id=%s;
+    """, (data['name'], data['type'], activity_id))
+    mysql.connection.commit()
+    cur.close()
+    return {'message': 'Activity updated successfully'}, 200
+
+# DELETE ACTIVITY
+@app.route('/activities/delete/<int:activity_id>', methods=['DELETE'])
+def delete_activity(activity_id):
+    cur = mysql.connection.cursor()
+    cur.execute("""DELETE FROM Activities
+                WHERE activity_id = %s;
+    """, (activity_id,))
+    mysql.connection.commit()
+    cur.close()
+    return {'message': 'Activity deleted successfully'}, 200
+
+# INSERT ACTIVITY
+@app.route('/activities/insert', methods=['POST'])
+def create_activity():
+    data = request.json
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        INSERT INTO Activities (name, type)
+        VALUES (%s, %s);
+    """, (data['name'], data['type']))
+    mysql.connection.commit()
+    cur.close()
+    return {'message': 'Activity added successfully'}, 201
 
 # FETCH ALL DESTINATIONS ACTIVITIES
 @app.route('/destinations_activities/fetchall', methods=['GET'])
@@ -230,4 +306,4 @@ def delete_travel_plan(plan_id):
 
 # Listener
 if __name__ == "__main__":
-    app.run(port=7564, debug=True)
+    app.run(port=35643, debug=True)

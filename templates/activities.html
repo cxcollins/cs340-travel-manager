@@ -31,19 +31,11 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td>Snorkeling or Diving</td>
-                        <td>Outdoor</td>
-                        <td class="centerButtons">
-                            <button>Edit</button>
-                            <button>Delete</button>
-                        </td>
-                    </tr>
+                    <!-- Table data gets populated here -->
                 </tbody>
             </table>
             <h3>Add New Activity</h3>
-            <form>
+            <form onsubmit="event.preventDefault(); insertActivity()">
                 <div>
                     <label for="activityName">Name:</label>
                     <input
@@ -71,7 +63,8 @@
             <div class="modal-content">
                 <span class="close" onclick="closeEditModal()">&times;</span>
                 <h3>Edit Activity</h3>
-                <form>
+                <form onsubmit="event.preventDefault(); updateActivity()">
+                    <input type="hidden" id="editActivityId" name="activity_id">
                     <div>
                         <label for="editName">Name:</label>
                         <input type="text" id="editName" required />
@@ -98,7 +91,96 @@
             </div>
         </div>
         <script>
-            function openEditModal(name, type) {
+            
+            // Fetch all activities when the page loads
+            document.addEventListener("DOMContentLoaded", function() {
+                fetchActivities();
+            });
+
+            async function fetchActivities() {
+                const response = await fetch(`/activities/fetchall`);
+                const data = await response.json();
+                const tbody = document.querySelector("tbody");
+                tbody.innerHTML = "";
+
+                for (const activity of data.activities) {
+                    const row = document.createElement("tr");
+                    const activityId = activity.activity_id;
+                    const activityName = activity.name;
+                    const activityType = activity.type;
+
+                    row.innerHTML = `
+                        <td>${activityId}</td>
+                        <td>${activityName}</td>
+                        <td>${activityType}</td>
+                        <td class="centerButtons">
+                            <button onclick="openEditModal('${activityId}', '${activityName}', '${activityType}')">Edit</button>
+                            <button onclick="deleteActivity(${activityId})">Delete</button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                }
+            }
+
+            // Update activity
+            function updateActivity() {
+                const activityId = document.getElementById("editActivityId").value;
+                const activityName = document.getElementById("editName").value;
+                const activityType = document.getElementById("editType").value;
+                const updatedActivity = {
+                    name: activityName,
+                    type: activityType
+                };
+                console.log(updatedActivity);
+
+                fetch(`/activities/update/${activityId}`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(updatedActivity)
+                })
+                .then(response => response.json())
+                .then(() => {
+                    refreshData();
+                    closeEditModal();
+                })
+            }
+
+            // Delete activity
+            function deleteActivity(activityId) {
+                if (confirm("Are you sure you want to delete this activity?")) {
+                    fetch(`/activities/delete/${activityId}`, {
+                        method: "DELETE"
+                    })
+                    .then(response => response.json())
+                    .then(() => refreshData());
+                }
+            }
+
+            // Insert new activity
+            function insertActivity() {
+                const activityName = document.getElementById("activityName").value;
+                const activityType = document.getElementById("activityType").value;
+                const newActivity = {
+                    name: activityName,
+                    type: activityType
+                }
+                fetch(`/activities/insert`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(newActivity)
+                })
+                .then(response => response.json())
+                .then(() => refreshData())
+            }
+
+            // Refresh the data
+            async function refreshData() {
+                // Fetch activities
+                await fetchActivities();
+            }
+            
+            function openEditModal(id, name, type) {
+                document.getElementById("editActivityId").value = id;
                 document.getElementById("editName").value = name;
                 document.getElementById("editType").value = type;
                 document.getElementById("editModal").classList.remove("hidden");
@@ -117,21 +199,6 @@
             function closeDeleteModal() {
                 document.getElementById("deleteModal").classList.add("hidden");
             }
-
-            document.querySelectorAll("button").forEach((button) =>
-                button.addEventListener("click", function (event) {
-                    if (event.target.textContent === "Edit") {
-                        openEditModal(
-                            event.target.parentElement.parentElement.children[1]
-                                .textContent,
-                            event.target.parentElement.parentElement.children[2]
-                                .textContent
-                        );
-                    } else if (event.target.textContent === "Delete") {
-                        openDeleteModal();
-                    }
-                })
-            );
 
             window.onclick = function (event) {
                 let deleteModal = document.getElementById("deleteModal");

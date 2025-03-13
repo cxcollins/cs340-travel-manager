@@ -45,6 +45,16 @@ SELECT * FROM `Destinations`;
 -- Insert a new destination into the Destinations table
 INSERT INTO `Destinations` (`country`, `state`, `city`)
 VALUES (%%country%%, %%state%%, %%city%%);
+-- Update an existing destination
+UPDATE `Destinations`
+SET
+    `country` = %%country%%,
+    `city` = %%city%%,
+    `state` = %%state%%
+WHERE `destination_id` = %%destination_id%%;
+-- Delete a destination
+DELETE FROM `Destinations`
+WHERE `destination_id` = %%destination_id%%;
 
 -- Destination Activity Queries (CRUD)
 -- Select all destination activities
@@ -68,6 +78,15 @@ SELECT * FROM `Activities`;
 -- Insert a new activity into the Activities table
 INSERT INTO `Activities` (`name`, `type`)
 VALUES (%%name%%, %%type%%);
+-- Update an existing activity by activity_id
+UPDATE `Activities`
+SET
+    `name` = %%name%%,
+    `type` = %%type%%
+WHERE `activity_id` = %%activity_id%%;
+-- Delete an existing activity by activity_id
+DELETE FROM `Activities`
+WHERE `activity_id` = %%activity_id%%;
 
 -- Hotel Queries (CREATE and READ)
 -- Select all hotels by destination_id
