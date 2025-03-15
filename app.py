@@ -304,6 +304,51 @@ def delete_travel_plan(plan_id):
     cur.close()
     return {'message': 'Travel Plan deleted successfully'}, 200
 
+# FETCH ALL HOTELS
+@app.route('/hotels/fetchall', methods=['GET'])
+def fetchall_hotels():
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM Hotels;")
+    hotels = cur.fetchall()
+    cur.close()
+    return {'hotels': hotels}, 200
+
+# INSERT HOTEL
+@app.route('/hotels/insert', methods=['POST'])
+def create_hotel():
+    data = request.json
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        INSERT INTO Hotels (name, cost_per_night, rating, destination_id)
+        VALUES (%s, %s, %s, %s);
+    """, (data['name'], data['cost_per_night'], data['rating'], data['destination_id']))
+    mysql.connection.commit()
+    cur.close()
+    return {'message': 'Hotel added successfully'}, 201
+
+# UPDATE HOTEL
+@app.route('/hotels/update/<int:hotel_id>', methods=['PUT'])
+def update_hotel(hotel_id):
+    data = request.json
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        UPDATE Hotels
+        SET name=%s, cost_per_night=%s, rating=%s, destination_id=%s
+        WHERE hotel_id=%s;
+    """, (data['name'], data['cost_per_night'], data['rating'], data['destination_id'], hotel_id))
+    mysql.connection.commit()
+    cur.close()
+    return {'message': 'Hotel updated successfully'}, 200
+
+# DELETE HOTEL
+@app.route('/hotels/delete/<int:hotel_id>', methods=['DELETE'])
+def delete_hotel(hotel_id):
+    cur = mysql.connection.cursor()
+    cur.execute("DELETE FROM Hotels WHERE hotel_id = %s;", (hotel_id,))
+    mysql.connection.commit()
+    cur.close()
+    return {'message': 'Hotel deleted successfully'}, 200
+
 # Listener
 if __name__ == "__main__":
     app.run(port=35643, debug=True)

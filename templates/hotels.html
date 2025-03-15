@@ -25,44 +25,31 @@
                 <thead>
                     <tr>
                         <th>Hotel ID</th>
-                        <th>Destination ID</th>
                         <th>Name</th>
                         <th>Cost Per Night</th>
                         <th>Rating</th>
+                        <th>Destination</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td>3</td>
-                        <td>Luxury Seine View Hotel</td>
-                        <td>$400.00</td>
-                        <td>5.0</td>
-                        <td class="centerButtons">
-                            <button>Edit</button>
-                            <button>Delete</button>
-                        </td>
-                    </tr>
+                    <!-- Table data gets populated here -->
                 </tbody>
             </table>
             <h3>Add New Hotel</h3>
-            <form>
+            <form id="hotelForm" onsubmit="event.preventDefault(); insertHotel();">
                 <div>
-                    <label for="destinationID">Destination ID:</label>
-                    <input
-                        type="text"
-                        id="destinationID"
-                        name="destinationID"
-                        required
-                    />
+                    <label for="destinationId">Destination:</label>
+                    <select id="destinationId" name="destinationId">
+                        <!-- Destinations dynamically populated here -->
+                    </select>
                 </div>
                 <div>
-                    <label for="hotelName">Name:</label>
+                    <label for="name">Name:</label>
                     <input
                         type="text"
-                        id="hotelName"
-                        name="hotelName"
+                        id="name"
+                        name="name"
                         required
                     />
                 </div>
@@ -88,10 +75,13 @@
             <div class="modal-content">
                 <span class="close" onclick="closeEditModal()">&times;</span>
                 <h3>Edit Hotel</h3>
-                <form>
+                <form onsubmit="event.preventDefault(); updateHotel();">
+                    <input type="hidden" id="editHotelId" name="editHotelId">
                     <div>
-                        <label for="editDestinationID">Destination ID:</label>
-                        <input type="text" id="editDestinationID" required />
+                        <label for="editDestinationSelect">Destination:</label>
+                        <select id="editDestinationSelect">
+                            <!-- Dynamic dropdown for destinations go here -->
+                        </select>
                     </div>
                     <div>
                         <label for="editName">Name:</label>
@@ -123,12 +113,168 @@
             </div>
         </div>
         <script>
-            function openEditModal(destinationID, name, costPerNight, rating) {
-                document.getElementById("editDestinationID").value = destinationID;
+            // CONSTANTS
+            const destinationMap = {};
+
+            // Fetch hotels when the page loads
+            document.addEventListener("DOMContentLoaded", async function () {
+                await refreshData();
+                console.log("Page loaded");
+            })
+
+            // Get all hotels
+            async function fetchHotels() {
+                const response = await fetch(`/hotels/fetchall`);
+                const data = await response.json();
+                const tbody = document.querySelector("tbody");
+                tbody.innerHTML = "";
+
+                for (const hotel of data.hotels) {
+                    const row = document.createElement("tr");
+                    const hotelId = hotel.hotel_id;
+                    const name = hotel.name;
+                    const costPerNight = hotel.cost_per_night;
+                    const rating = hotel.rating;
+                    const destination = destinationMap[hotel.destination_id];
+
+                    row.innerHTML = `
+                        <td>${hotelId}</td>
+                        <td>${name}</td>
+                        <td>${costPerNight}</td>
+                        <td>${rating}</td>
+                        <td>${destination}</td>
+                        <td class="centerButtons">
+                            <button onclick="openEditModal('${hotelId}', '${destination}', '${name}', '${costPerNight}', '${rating}')">Edit</button>
+                            <button onclick="deleteHotel(${hotelId})">Delete</button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                }
+            }
+
+            // Get all destinations for dropdown
+            function fetchDestinations() {
+                return fetch(`/destinations/fetchall`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const destinationsSelect = document.getElementById("destinationId")
+
+                        data.destinations.forEach(destination => {
+                            const name = `${destination.city}${destination.state ? ', ' + destination.state : ''}, ${destination.country}`
+                            destinationMap[destination.destination_id] = name
+
+                            let option = document.createElement("option");
+                            option.value = destination.destination_id;
+                            option.innerHTML = name;
+                            destinationsSelect.appendChild(option)
+                        })
+                    })
+            }
+
+            // Wait for map to be populated
+            async function waitForMapToBeReady(map) {
+                while (Object.keys(map).length === 0) {
+                    console.log("waiting for map to be populated...");
+                    await new Promise(resolve => setTimeout(resolve, 100)); // wait 100ms
+                }
+            }
+
+            // Refresh the data
+            async function refreshData() {
+                // Reset the dropdown
+                document.getElementById("destinationId").innerHTML = '';
+
+                // Fetch detsinations
+                await fetchDestinations();
+
+                // Wait for maps to be populated before fetching hotels
+                await waitForMapToBeReady(destinationMap);
+
+                await fetchHotels();
+            }
+
+            // Update hotel
+            function updateHotel() {
+                const hotelId = document.getElementById("editHotelId").value;
+                const name = document.getElementById("editName").value;
+                const costPerNight = document.getElementById("editCostPerNight").value;
+                const rating = document.getElementById("editRating").value;
+                const destinationId = document.getElementById("editDestinationSelect").value;
+                const updatedHotel = {
+                    name: name,
+                    cost_per_night: costPerNight,
+                    rating: rating,
+                    destination_id: destinationId
+                };
+                console.log(updatedHotel);
+
+                fetch(`/hotels/update/${hotelId}`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(updatedHotel)
+                })
+                .then(response => response.json())
+                .then(() => {
+                    refreshData();
+                    closeEditModal();
+                })
+            }
+
+            // Delete hotel
+            function deleteHotel(hotelId) {
+                if (confirm("Are you sure you want to delete this hotel?")) {
+                    fetch(`/hotels/delete/${hotelId}`, {
+                        method: "DELETE"
+                    })
+                    .then(response => response.json())
+                    .then(() => refreshData());
+                }
+            }
+
+            // Insert hotel
+            function insertHotel() {
+                const name = document.getElementById("name").value;
+                const costPerNight = document.getElementById("costPerNight").value;
+                const rating = document.getElementById("rating").value;
+                const destinationId = document.getElementById("destinationId").value;
+                const newHotel = {
+                    name: name,
+                    cost_per_night: costPerNight,
+                    rating: rating,
+                    destination_id: destinationId
+                };
+                fetch(`/hotels/insert`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(newHotel)
+                })
+                .then(response => response.json())
+                .then(() => refreshData());
+            }
+
+            function openEditModal(hotelId, destination, name, costPerNight, rating) {
+                document.getElementById("editHotelId").value = hotelId;
                 document.getElementById("editName").value = name;
-                document.getElementById("editCostPerNight").value =
-                    costPerNight;
+                document.getElementById("editCostPerNight").value = costPerNight;
                 document.getElementById("editRating").value = rating;
+                const destinationIdDropdown = document.getElementById("editDestinationSelect");
+
+                // Clear old options
+                destinationIdDropdown.innerHTML = "";
+
+                // Populate destinations dropdown
+                Object.entries(destinationMap).forEach(([id, name]) => {
+                    const option = document.createElement("option");
+                    option.value = id;
+                    option.textContent = name; 
+
+                    if (name === destination) {
+                        option.selected = true;
+                    }
+
+                    destinationIdDropdown.appendChild(option);
+                });
+
                 document.getElementById("editModal").classList.remove("hidden");
             }
 
