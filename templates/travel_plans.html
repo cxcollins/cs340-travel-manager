@@ -25,8 +25,8 @@
                 <thead>
                     <tr>
                         <th>Plan ID</th>
-                        <th>User ID</th>
-                        <th>Destination ID</th>
+                        <th>User Name</th>
+                        <th>Destination Name</th>
                         <th>Start Date</th>
                         <th>End Date</th>
                         <th>Budget</th>
@@ -360,11 +360,16 @@
 
                     destinationDropdown.appendChild(option);
                 });
+
                 // Append a "None" option
                 let option = document.createElement("option");
                 option.value = "";
                 option.innerHTML = "None";
                 destinationDropdown.appendChild(option);
+                if (destinationName === "None") {
+                    option.selected = true;
+                }
+
 
                 // Set other fields
                 document.getElementById("editStartDate").value = formatDateForInput(startDate);

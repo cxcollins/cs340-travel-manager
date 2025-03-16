@@ -106,7 +106,7 @@
                     const row = document.createElement("tr")
                     const destinationId = destination.destination_id;
                     const country = destination.country;
-                    const state = destination.state;
+                    const state = destination.state === null ? "None" : destination.state;
                     const city = destination.city;
 
                     row.innerHTML = `
@@ -162,7 +162,9 @@
                 const state = document.getElementById("state").value;
                 const city = document.getElementById("city").value;
                 const newDestination = {
-                    country, state, city
+                    country, 
+                    state: state.trim() === "" ? null : state, 
+                    city
                 }
                 console.log(newDestination);
 

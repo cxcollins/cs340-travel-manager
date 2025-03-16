@@ -27,10 +27,10 @@ CREATE OR REPLACE TABLE `Travel_Plans` (
     `plan_id` INT NOT NULL UNIQUE AUTO_INCREMENT, -- Unique plan ID
     `user_id` INT NOT NULL, -- ID of the user who created the plan
     `destination_id` INT, -- ID of the destination
-    `start_date` DATE, -- Start date of the travel plan
-    `end_date` DATE, -- End date of the travel plan
-    `budget` DECIMAL(10, 2) NOT NULL DEFAULT 99999.99, -- Budget for the travel plan
-    `status` ENUM('PENDING', 'BOOKED', 'COMPLETED') NOT NULL DEFAULT 'PENDING', -- Status of the travel plan
+    `start_date` DATE NOT NULL, -- Start date of the travel plan
+    `end_date` DATE NOT NULL, -- End date of the travel plan
+    `budget` DECIMAL(10, 2) NOT NULL, -- Budget for the travel plan
+    `status` ENUM('PENDING', 'BOOKED', 'COMPLETED') NOT NULL, -- Status of the travel plan
     PRIMARY KEY (`plan_id`), -- Primary key constraint
     FOREIGN KEY (`user_id`) REFERENCES `Users`(`user_id`) ON DELETE CASCADE, -- Foreign key constraint referencing Users table
     FOREIGN KEY (`destination_id`) REFERENCES `Destinations`(`destination_id`) ON DELETE SET NULL -- Foreign key constraint referencing Destinations table
@@ -76,11 +76,17 @@ VALUES ('Japan', NULL, 'Tokyo'),
        ('United States', 'Hawaii', 'Honolulu'),
        ('France', NULL, 'Paris');
 
--- Insert sample data into Travel_Plans table
+-- Insert sample data into Travel_Plans table using subqueries to populate destination_id
 INSERT INTO `Travel_Plans` (`user_id`, `destination_id`, `start_date`, `end_date`, `budget`, `status`)
-VALUES (2, 1, '2025-01-07', '2025-01-09', 2000.00, 'COMPLETED'),
-    (1, 2, '2025-07-20', '2025-08-20', 1500.00, 'BOOKED'),
-    (3, 2, '2025-09-01', '2025-09-03', 2500.00, 'PENDING');
+VALUES 
+    (2, (SELECT destination_id FROM `Destinations` WHERE country = 'Japan' AND city = 'Tokyo'), 
+        '2025-01-07', '2025-01-09', 2000.00, 'COMPLETED'),
+
+    (1, (SELECT destination_id FROM `Destinations` WHERE country = 'United States' AND city = 'Honolulu'), 
+        '2025-07-20', '2025-08-20', 1500.00, 'BOOKED'),
+
+    (3, (SELECT destination_id FROM `Destinations` WHERE country = 'United States' AND city = 'Honolulu'), 
+        '2025-09-01', '2025-09-03', 2500.00, 'PENDING');
 
 -- Insert sample data into Activities table
 INSERT INTO `Activities` (`name`, `type`)
@@ -88,17 +94,29 @@ VALUES ('Snorkeling or Diving', 'Outdoor'),
        ('City Landmark Tour', 'Sightseeing'),
        ('Museum Exploration', 'Cultural');
 
--- Insert sample data into Destinations_Activities table
+-- Insert sample data into Destinations_Activities table using subqueries for destination_id and activity_id
 INSERT INTO `Destinations_Activities` (`destination_id`, `activity_id`)
-VALUES (1, 2),
-       (2, 1),
-       (3, 2);
+VALUES 
+    ((SELECT destination_id FROM `Destinations` WHERE country = 'Japan' AND city = 'Tokyo'), 
+        (SELECT activity_id FROM `Activities` WHERE name = 'City Landmark Tour')),
 
--- Insert sample data into Hotels table
+    ((SELECT destination_id FROM `Destinations` WHERE country = 'United States' AND city = 'Honolulu'), 
+        (SELECT activity_id FROM `Activities` WHERE name = 'Snorkeling or Diving')),
+
+    ((SELECT destination_id FROM `Destinations` WHERE country = 'France' AND city = 'Paris'), 
+        (SELECT activity_id FROM `Activities` WHERE name = 'City Landmark Tour'));
+
+-- Insert sample data into Hotels table using subqueries to populate destination_id
 INSERT INTO `Hotels` (`destination_id`, `name`, `cost_per_night`, `rating`)
-VALUES (3, 'Luxury Seine View Hotel', 400.00, 5.0),
-       (2, 'Waikiki Beach Resort', 350.00, 4.8),
-       (1, 'Ginza Luxury Towers', 380.00, 4.9);
+VALUES 
+    ((SELECT destination_id FROM `Destinations` WHERE country = 'France' AND city = 'Paris'), 
+        'Luxury Seine View Hotel', 400.00, 5.0),
+
+    ((SELECT destination_id FROM `Destinations` WHERE country = 'United States' AND city = 'Honolulu'), 
+        'Waikiki Beach Resort', 350.00, 4.8),
+
+    ((SELECT destination_id FROM `Destinations` WHERE country = 'Japan' AND city = 'Tokyo'), 
+        'Ginza Luxury Towers', 380.00, 4.9);
 
 -- Test queries to verify data
 SELECT * FROM `Users`;

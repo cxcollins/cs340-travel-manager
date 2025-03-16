@@ -39,7 +39,7 @@ WHERE `plan_id` = %%plan_id%%;
 DELETE FROM `Travel_Plans`
 WHERE `plan_id` = %%plan_id%%;
 
--- Destination Queries (CREATE and READ)
+-- Destination Queries (CRUD)
 -- Select all destinations
 SELECT * FROM `Destinations`;
 -- Insert a new destination into the Destinations table
@@ -73,7 +73,7 @@ DELETE FROM `Destinations_Activities`
 WHERE `destination_activity_id` = %%destination_activity_id%%;
 
 -- Activity Queries
--- Select all activities (CREATE and READ)
+-- Select all activities (CRUD)
 SELECT * FROM `Activities`;
 -- Insert a new activity into the Activities table
 INSERT INTO `Activities` (`name`, `type`)
@@ -88,10 +88,21 @@ WHERE `activity_id` = %%activity_id%%;
 DELETE FROM `Activities`
 WHERE `activity_id` = %%activity_id%%;
 
--- Hotel Queries (CREATE and READ)
+-- Hotel Queries (CRUD)
 -- Select all hotels by destination_id
 SELECT * FROM `Hotels`
 WHERE `destination_id` = %%destination_id%%;
 -- Insert a new hotel into the Hotels table
 INSERT INTO `Hotels` (`destination_id`, `name`, `cost_per_night`, `rating`)
 VALUES (%%destination_id%%, %%name%%, %%cost_per_night%%, %%rating%%);
+-- Update an existing hotel by hotel_id
+UPDATE `Hotels`
+SET
+    `destination_id` = %%destination_id%%,
+    `name` = %%name%%,
+    `cost_per_night` = %%cost_per_night%%,
+    `rating` = %%rating%%
+WHERE `hotel_id` = %%hotel_id%%;
+-- Delete a hotel by hotel_id
+DELETE FROM `Hotels`
+WHERE `hotel_id` = %%hotel_id%%;
